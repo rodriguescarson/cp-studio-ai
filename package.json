@@ -2,7 +2,7 @@
   "name": "cp-studio-ai",
   "displayName": "CP Studio AI",
   "description": "The All-in-One Competitive Programming Workspace for VS Code & Cursor. Setup problems from Codeforces, LeetCode, and GeeksforGeeks instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
