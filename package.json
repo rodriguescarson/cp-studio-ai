@@ -1,0 +1,317 @@
+{
+  "name": "cf-studio",
+  "displayName": "cfx - codeforce studio",
+  "description": "Professional Codeforces contest workspace for VS Code & Cursor. Setup contests instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
+  "version": "1.0.1",
+  "publisher": "rodriguescarson",
+  "author": {
+    "name": "Carson Rodrigues",
+    "email": "rodriguescarson@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rodriguescarson/codeforces-contest-helper"
+  },
+  "homepage": "https://github.com/rodriguescarson/codeforces-contest-helper",
+  "bugs": {
+    "url": "https://github.com/rodriguescarson/codeforces-contest-helper/issues"
+  },
+  "keywords": [
+    "codeforces",
+    "competitive-programming",
+    "contest",
+    "cpp",
+    "c++",
+    "testing",
+    "ai",
+    "code-analysis"
+  ],
+  "engines": {
+    "vscode": ">=1.80.0"
+  },
+  "icon": "resources/logo.png",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:codeforces.setupFromUrl",
+    "onCommand:codeforces.runTests",
+    "onCommand:codeforces.aiAnalysis",
+    "onCommand:codeforces.copyCode",
+    "onCommand:codeforces.openChat",
+    "onCommand:codeforces.newChat",
+    "onCommand:codeforces.configureApiKey",
+    "onCommand:codeforces.setupFromContest",
+    "onCommand:codeforces.setupProfile",
+    "onView:cfStudioContests",
+    "onView:cfStudioChatView",
+    "onView:cfStudioProfileView",
+    "onCommand:codeforces.pullLadder",
+    "onCommand:codeforces.refreshSolvedProblems",
+    "onCommand:codeforces.showSolvedProblems",
+    "onView:cfStudioSolvedProblemsView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeforces.setupFromUrl",
+        "title": "cfx: Setup Contest from URL",
+        "icon": "$(link)"
+      },
+      {
+        "command": "codeforces.runTests",
+        "title": "cfx: Run Tests",
+        "icon": "$(play)"
+      },
+      {
+        "command": "codeforces.aiAnalysis",
+        "title": "cfx: Open Chat",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "codeforces.openChat",
+        "title": "cfx: Open Chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "codeforces.copyCode",
+        "title": "cfx: Copy Code to Clipboard",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "codeforces.newChat",
+        "title": "cfx: New Chat",
+        "icon": "$(add)"
+      },
+      {
+        "command": "codeforces.configureApiKey",
+        "title": "cfx: Configure API Key",
+        "icon": "$(key)"
+      },
+      {
+        "command": "codeforces.insertCode",
+        "title": "cfx: Insert Code from Chat"
+      },
+      {
+        "command": "codeforces.setupFromContest",
+        "title": "cfx: Setup Contest",
+        "icon": "$(calendar)"
+      },
+      {
+        "command": "codeforces.setupProfile",
+        "title": "cfx: Setup Profile",
+        "icon": "$(account)"
+      },
+      {
+        "command": "codeforces.refreshContests",
+        "title": "cfx: Refresh Contests",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codeforces.refreshProfile",
+        "title": "cfx: Refresh Profile",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codeforces.clearChat",
+        "title": "cfx: Clear Chat",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codeforces.showChatHistory",
+        "title": "cfx: Chat History",
+        "icon": "$(history)"
+      },
+      {
+        "command": "codeforces.pullLadder",
+        "title": "cfx: Pull A2OJ Ladder",
+        "icon": "$(download)"
+      },
+      {
+        "command": "codeforces.refreshSolvedProblems",
+        "title": "cfx: Refresh Solved Problems",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "codeforces.showSolvedProblems",
+        "title": "cfx: Show Solved Problems",
+        "icon": "$(checklist)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "codeforces.copyCode",
+          "when": "resourceLangId == cpp && resourcePath =~ /contests/.*/main\\.cpp$",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "codeforces.setupFromUrl",
+          "group": "codeforces"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "codeforces.setupFromUrl",
+          "when": "view == cfStudioContests",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.refreshContests",
+          "when": "view == cfStudioContests",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.runTests",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.aiAnalysis",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.clearChat",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.newChat",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.showChatHistory",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.configureApiKey",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.setupProfile",
+          "when": "view == cfStudioProfileView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.refreshProfile",
+          "when": "view == cfStudioProfileView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "views": {
+      "cfStudio": [
+        {
+          "id": "cfStudioContests",
+          "name": "Upcoming Contests",
+          "when": "true"
+        },
+        {
+          "id": "cfStudioChatView",
+          "name": "Chat",
+          "type": "webview",
+          "when": "true"
+        },
+        {
+          "id": "cfStudioProfileView",
+          "name": "Profile Stats",
+          "type": "webview",
+          "when": "true"
+        },
+        {
+          "id": "cfStudioSolvedProblemsView",
+          "name": "Solved Problems",
+          "type": "webview",
+          "when": "true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cfStudio",
+          "title": "cfx - codeforce studio",
+          "icon": "resources/logo.png"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CF Studio",
+      "properties": {
+        "codeforces.contestsPath": {
+          "type": "string",
+          "default": "${workspaceFolder}/contests",
+          "description": "Path to contests directory"
+        },
+        "codeforces.aiProvider": {
+          "type": "string",
+          "enum": [
+            "openrouter",
+            "openai",
+            "anthropic",
+            "custom"
+          ],
+          "default": "openrouter",
+          "description": "AI provider for analysis (OpenRouter recommended)"
+        },
+        "codeforces.aiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenRouter API key (or other provider key) - Get yours at https://openrouter.ai"
+        },
+        "codeforces.username": {
+          "type": "string",
+          "default": "",
+          "description": "Codeforces username/handle for profile stats. Can be changed dynamically without editing .env file."
+        },
+        "codeforces.aiModel": {
+          "type": "string",
+          "default": "openai/gpt-4o:online",
+          "description": "AI model to use (OpenRouter format: openai/gpt-4o:online for web search, openai/gpt-4, anthropic/claude-3-opus, etc.)"
+        },
+        "codeforces.aiBaseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Custom API base URL (for custom provider, leave empty for OpenRouter)"
+        },
+        "codeforces.solvedProblemsRefreshInterval": {
+          "type": "number",
+          "default": 3600000,
+          "description": "Auto-refresh interval for solved problems in milliseconds (default: 1 hour)"
+        },
+        "codeforces.autoRefreshSolved": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically refresh solved problems on extension activation"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "tsc -p ./",
+    "package": "vsce package --out builds"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "marked": "^11.1.1",
+    "codeforces-api-ts": "^3.0.1"
+  }
+}
