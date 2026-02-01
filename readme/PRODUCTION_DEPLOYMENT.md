@@ -223,5 +223,5 @@ Users need to configure:
 
 For issues or questions:
 
-- GitHub Issues: https://github.com/rodriguescarson/codeforces-contest-helper/issues
+- GitHub Issues: https://github.com/rodriguescarson/cp-studio/issues
 - Check TROUBLESHOOTING.md for common issues

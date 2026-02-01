@@ -181,5 +181,5 @@ The extension now displays Codeforces profile images!
 ## Support
 
 - **Documentation**: See `PRODUCTION_DEPLOYMENT.md` for detailed deployment guide
-- **Issues**: https://github.com/rodriguescarson/codeforces-contest-helper/issues
+- **Issues**: https://github.com/rodriguescarson/cp-studio/issues
 - **Setup Help**: See `OPENROUTER_SETUP.md` for AI setup guide

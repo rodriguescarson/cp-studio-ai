@@ -6,7 +6,7 @@ Thank you for your interest in contributing to CP Studio! This document provides
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/rodriguescarson/codeforces-contest-helper.git
+   git clone https://github.com/rodriguescarson/cp-studio.git
    cd codeforces-contest-helper
    ```
 
@@ -251,8 +251,8 @@ async setupFromUrl(url: string): Promise<void> {
 
 ## 📧 Getting Help
 
-- 💬 [GitHub Discussions](https://github.com/rodriguescarson/codeforces-contest-helper/discussions)
-- 🐛 [GitHub Issues](https://github.com/rodriguescarson/codeforces-contest-helper/issues)
+- 💬 [GitHub Discussions](https://github.com/rodriguescarson/cp-studio/discussions)
+- 🐛 [GitHub Issues](https://github.com/rodriguescarson/cp-studio/issues)
 - 📧 Email: rodriguescarson@gmail.com
 
 ## 📄 License

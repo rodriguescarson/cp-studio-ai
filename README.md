@@ -498,7 +498,7 @@ If the CP Studio logo appears white or not displaying properly:
 
 1. **Fork the Repository**
    ```bash
-   git clone https://github.com/rodriguescarson/codeforces-contest-helper.git
+   git clone https://github.com/rodriguescarson/cp-studio.git
    cd codeforces-contest-helper
    ```
 
@@ -668,8 +668,8 @@ Have an idea for a new feature?
 
 ### 📧 Questions?
 
-- 💬 Open a [Discussion](https://github.com/rodriguescarson/codeforces-contest-helper/discussions)
-- 🐛 Create an [Issue](https://github.com/rodriguescarson/codeforces-contest-helper/issues)
+- 💬 Open a [Discussion](https://github.com/rodriguescarson/cp-studio/discussions)
+- 🐛 Create an [Issue](https://github.com/rodriguescarson/cp-studio/issues)
 - 📧 Email: rodriguescarson@gmail.com
 
 **Thank you for contributing to CP Studio!** 🎉
@@ -726,7 +726,7 @@ Built with ❤️ for competitive programmers worldwide.
 
 **Made with ❤️ for competitive programmers**
 
-[⭐ Star on GitHub](https://github.com/rodriguescarson/codeforces-contest-helper) • [🌐 Project Page](https://www.carsonrodrigues.com/cp-studio) • [📝 Report Issue](https://github.com/rodriguescarson/codeforces-contest-helper/issues) • [📖 Documentation](https://github.com/rodriguescarson/codeforces-contest-helper#readme)
+[⭐ Star on GitHub](https://github.com/rodriguescarson/cp-studio) • [🌐 Project Page](https://www.carsonrodrigues.com/cp-studio) • [📝 Report Issue](https://github.com/rodriguescarson/cp-studio/issues) • [📖 Documentation](https://github.com/rodriguescarson/cp-studio#readme)
 
 **One extension. Multiple platforms. Zero confusion.**
 
