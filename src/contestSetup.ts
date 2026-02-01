@@ -9,12 +9,29 @@ import { promisify } from 'util';
 import { CodeforcesAPI } from './codeforcesApi';
 import { ProblemStatementFetcher } from './problemStatementFetcher';
 import { SolvedProblemsTracker } from './solvedTracker';
+import { LeetCodeFetcher } from './leetcodeFetcher';
+import { GeeksforgeeksFetcher } from './geeksforgeeksFetcher';
 
 const execAsync = promisify(exec);
+
+interface ParsedProblemUrl {
+    platform: 'codeforces' | 'leetcode' | 'geeksforgeeks';
+    // Codeforces
+    contestId?: number;
+    problemIndex?: string;
+    // LeetCode
+    slug?: string;
+    // GeeksforGeeks
+    problemName?: string;
+    problemId?: string;
+    url: string;
+}
 
 export class ContestSetup {
     private context: vscode.ExtensionContext;
     private contestsPath: string;
+    private leetcodePath: string;
+    private geeksforgeeksPath: string;
     private api: CodeforcesAPI;
     private solvedTracker: SolvedProblemsTracker;
 
@@ -23,23 +40,48 @@ export class ContestSetup {
         this.api = new CodeforcesAPI();
         this.solvedTracker = new SolvedProblemsTracker(context);
         const config = vscode.workspace.getConfiguration('codeforces');
+        
+        // Get paths from configuration
         this.contestsPath = config.get<string>('contestsPath', '${workspaceFolder}/contests') || '';
+        this.leetcodePath = config.get<string>('leetcodePath', '${workspaceFolder}/leetcode') || '';
+        this.geeksforgeeksPath = config.get<string>('geeksforgeeksPath', '${workspaceFolder}/geeksforgeeks') || '';
         
         // Resolve workspace folder variables
-        if (vscode.workspace.workspaceFolders && this.contestsPath.includes('${workspaceFolder}')) {
-            this.contestsPath = this.contestsPath.replace('${workspaceFolder}', vscode.workspace.workspaceFolders[0].uri.fsPath);
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || os.homedir();
+        
+        // Resolve contests path
+        if (this.contestsPath.includes('${workspaceFolder}')) {
+            this.contestsPath = this.contestsPath.replace('${workspaceFolder}', workspaceFolder);
         } else if (!vscode.workspace.workspaceFolders) {
-            // Fallback if no workspace folder
             this.contestsPath = path.join(os.homedir(), 'codeforces-contests');
         }
-        
-        // Ensure contests path is absolute
         if (!path.isAbsolute(this.contestsPath)) {
-            const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || os.homedir();
             this.contestsPath = path.resolve(workspaceFolder, this.contestsPath);
         }
         
-        console.log(`Contests path configured: ${this.contestsPath}`);
+        // Resolve leetcode path
+        if (this.leetcodePath.includes('${workspaceFolder}')) {
+            this.leetcodePath = this.leetcodePath.replace('${workspaceFolder}', workspaceFolder);
+        } else if (!vscode.workspace.workspaceFolders) {
+            this.leetcodePath = path.join(os.homedir(), 'leetcode');
+        }
+        if (!path.isAbsolute(this.leetcodePath)) {
+            this.leetcodePath = path.resolve(workspaceFolder, this.leetcodePath);
+        }
+        
+        // Resolve geeksforgeeks path
+        if (this.geeksforgeeksPath.includes('${workspaceFolder}')) {
+            this.geeksforgeeksPath = this.geeksforgeeksPath.replace('${workspaceFolder}', workspaceFolder);
+        } else if (!vscode.workspace.workspaceFolders) {
+            this.geeksforgeeksPath = path.join(os.homedir(), 'geeksforgeeks');
+        }
+        if (!path.isAbsolute(this.geeksforgeeksPath)) {
+            this.geeksforgeeksPath = path.resolve(workspaceFolder, this.geeksforgeeksPath);
+        }
+        
+        console.log(`Contests path: ${this.contestsPath}`);
+        console.log(`LeetCode path: ${this.leetcodePath}`);
+        console.log(`GeeksforGeeks path: ${this.geeksforgeeksPath}`);
     }
 
     async setupFromContestId(contestId: number): Promise<void> {
@@ -104,61 +146,31 @@ export class ContestSetup {
     async setupFromUrl(url: string): Promise<void> {
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: 'Setting up contest...',
+            title: 'Setting up problem...',
             cancellable: false
         }, async (progress) => {
             try {
                 progress.report({ increment: 0, message: 'Parsing URL...' });
 
-                // Parse URL to extract contest ID and problem index
-                const parsed = this.parseCodeforcesUrl(url);
+                // Parse URL to determine platform
+                const parsed = this.parseProblemUrl(url);
                 if (!parsed) {
-                    throw new Error('Invalid Codeforces URL. Expected format: https://codeforces.com/contest/2112/problem/A or https://codeforces.com/contest/2112');
+                    throw new Error('Invalid problem URL. Supported platforms: Codeforces, LeetCode, GeeksforGeeks');
                 }
 
-                const { contestId, problemIndex } = parsed;
-
-                // If no problem index specified, fetch contest problems and let user choose
-                if (!problemIndex) {
-                    progress.report({ increment: 10, message: 'Fetching contest problems...' });
-                    const problems = await this.getContestProblems(contestId);
-                    
-                    if (problems.length === 0) {
-                        throw new Error('No problems found for this contest');
-                    }
-
-                    // Show quick pick to select problem
-                    const problemItems = problems.map(p => ({
-                        label: `${p.index}: ${p.name}`,
-                        description: `Problem ${p.index}`,
-                        problemIndex: p.index
-                    }));
-
-                    const selected = await vscode.window.showQuickPick(problemItems, {
-                        placeHolder: 'Select a problem to set up'
-                    });
-
-                    if (!selected) {
-                        return; // User cancelled
-                    }
-
-                    // Use selected problem
-                    const selectedProblemIndex = selected.problemIndex;
-                    progress.report({ increment: 20, message: `Setting up contest ${contestId}, problem ${selectedProblemIndex}...` });
-                    
-                    const problemDir = path.join(this.contestsPath, contestId.toString(), selectedProblemIndex);
-                    await this.createDirectory(problemDir);
-                    await this.setupProblem(contestId, selectedProblemIndex, problemDir, progress);
-                } else {
-                    progress.report({ increment: 20, message: `Setting up contest ${contestId}, problem ${problemIndex}...` });
-
-                    // Create directory structure
-                    const problemDir = path.join(this.contestsPath, contestId.toString(), problemIndex);
-                    await this.createDirectory(problemDir);
-                    await this.setupProblem(contestId, problemIndex, problemDir, progress);
+                switch (parsed.platform) {
+                    case 'codeforces':
+                        await this.setupCodeforcesProblem(parsed, progress);
+                        break;
+                    case 'leetcode':
+                        await this.setupLeetCodeProblem(parsed, progress);
+                        break;
+                    case 'geeksforgeeks':
+                        await this.setupGeeksforgeeksProblem(parsed, progress);
+                        break;
+                    default:
+                        throw new Error(`Unsupported platform: ${parsed.platform}`);
                 }
-
-
             } catch (error: any) {
                 const errorMessage = error?.message || String(error);
                 const errorStack = error?.stack || 'No stack trace';
@@ -176,38 +188,253 @@ export class ContestSetup {
         });
     }
 
-    private parseCodeforcesUrl(url: string): { contestId: number; problemIndex: string | null } | null {
-        // Match patterns like:
-        // https://codeforces.com/contest/2112/problem/A
-        // https://codeforces.com/problemset/problem/2112/A
+    /**
+     * Parse problem URL to determine platform and extract identifiers
+     */
+    private parseProblemUrl(url: string): ParsedProblemUrl | null {
+        // LeetCode URLs: leetcode.com/problems/{slug}/
+        const leetcodeMatch = url.match(/leetcode\.com\/problems\/([^\/\?]+)/);
+        if (leetcodeMatch) {
+            return {
+                platform: 'leetcode',
+                slug: leetcodeMatch[1],
+                url: url
+            };
+        }
+
+        // GeeksforGeeks URLs: practice.geeksforgeeks.org/problems/{problem-name}/{id}
+        const geeksforgeeksMatch = url.match(/geeksforgeeks\.org\/problems\/([^\/]+)\/(\d+)/);
+        if (geeksforgeeksMatch) {
+            return {
+                platform: 'geeksforgeeks',
+                problemName: geeksforgeeksMatch[1],
+                problemId: geeksforgeeksMatch[2],
+                url: url
+            };
+        }
+
+        // Codeforces URLs: codeforces.com/contest/{contestId}/problem/{index}
         const contestMatch = url.match(/contest\/(\d+)/);
         const problemMatch = url.match(/problem\/([A-Z])/i);
 
         if (contestMatch && problemMatch) {
             return {
+                platform: 'codeforces',
                 contestId: parseInt(contestMatch[1]),
-                problemIndex: problemMatch[1].toUpperCase()
+                problemIndex: problemMatch[1].toUpperCase(),
+                url: url
             };
         }
 
-        // Try problemset format
+        // Try problemset format: codeforces.com/problemset/problem/{contestId}/{index}
         const problemsetMatch = url.match(/problemset\/problem\/(\d+)\/([A-Z])/i);
         if (problemsetMatch) {
             return {
+                platform: 'codeforces',
                 contestId: parseInt(problemsetMatch[1]),
-                problemIndex: problemsetMatch[2].toUpperCase()
+                problemIndex: problemsetMatch[2].toUpperCase(),
+                url: url
             };
         }
 
         // Match contest-only URL (no problem specified)
-        // https://codeforces.com/contest/2112
         if (contestMatch && !problemMatch) {
             return {
+                platform: 'codeforces',
                 contestId: parseInt(contestMatch[1]),
-                problemIndex: null  // Will prompt user or fetch all problems
+                problemIndex: undefined,  // Will prompt user or fetch all problems
+                url: url
             };
         }
 
+        return null;
+    }
+
+    private async setupCodeforcesProblem(parsed: ParsedProblemUrl, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+        const { contestId, problemIndex } = parsed;
+        
+        if (!contestId) {
+            throw new Error('Invalid Codeforces URL: contest ID not found');
+        }
+
+        // If no problem index specified, fetch contest problems and let user choose
+        if (!problemIndex) {
+            progress.report({ increment: 10, message: 'Fetching contest problems...' });
+            const problems = await this.getContestProblems(contestId);
+            
+            if (problems.length === 0) {
+                throw new Error('No problems found for this contest');
+            }
+
+            // Show quick pick to select problem
+            const problemItems = problems.map(p => ({
+                label: `${p.index}: ${p.name}`,
+                description: `Problem ${p.index}`,
+                problemIndex: p.index
+            }));
+
+            const selected = await vscode.window.showQuickPick(problemItems, {
+                placeHolder: 'Select a problem to set up'
+            });
+
+            if (!selected) {
+                return; // User cancelled
+            }
+
+            const problemDir = path.join(this.contestsPath, contestId.toString(), selected.problemIndex);
+            await this.createDirectory(problemDir);
+            await this.setupProblem(contestId, selected.problemIndex, problemDir, progress);
+        } else {
+            // Setup single problem
+            progress.report({ increment: 20, message: `Setting up contest ${contestId}, problem ${problemIndex}...` });
+            const problemDir = path.join(this.contestsPath, contestId.toString(), problemIndex);
+            await this.createDirectory(problemDir);
+            await this.setupProblem(contestId, problemIndex, problemDir, progress);
+        }
+    }
+
+    private async setupLeetCodeProblem(parsed: ParsedProblemUrl, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+        const { slug, url } = parsed;
+        
+        if (!slug) {
+            throw new Error('Invalid LeetCode URL: problem slug not found');
+        }
+
+        progress.report({ increment: 10, message: `Fetching LeetCode problem: ${slug}...` });
+        
+        // Fetch problem statement
+        const statement = await LeetCodeFetcher.fetchProblemStatement(slug);
+        if (!statement) {
+            throw new Error(`Failed to fetch problem statement for ${slug}`);
+        }
+
+        progress.report({ increment: 30, message: 'Fetching test cases...' });
+        
+        // Fetch test cases
+        const { inputs, outputs } = await LeetCodeFetcher.fetchTestCases(slug);
+
+        // Create problem directory
+        const problemDir = path.join(this.leetcodePath, slug);
+        await this.createDirectory(problemDir);
+
+        progress.report({ increment: 50, message: 'Creating files...' });
+
+        // Write problem statement
+        const statementPath = path.join(problemDir, 'problem_statement.txt');
+        const statementContent = LeetCodeFetcher.formatAsMarkdown(statement);
+        fs.writeFileSync(statementPath, statementContent, 'utf-8');
+
+        // Write test cases
+        if (inputs.length > 0 && outputs.length > 0) {
+            // Use first test case for in.txt/out.txt
+            fs.writeFileSync(path.join(problemDir, 'in.txt'), inputs[0], 'utf-8');
+            fs.writeFileSync(path.join(problemDir, 'out.txt'), outputs[0], 'utf-8');
+            
+            // Write additional test cases if available
+            if (inputs.length > 1) {
+                const additionalTests = inputs.slice(1).map((input, idx) => 
+                    `Test Case ${idx + 2}:\n${input}\n`
+                ).join('\n');
+                fs.writeFileSync(path.join(problemDir, 'additional_tests.txt'), additionalTests, 'utf-8');
+            }
+        } else {
+            // Create placeholder files
+            fs.writeFileSync(path.join(problemDir, 'in.txt'), '// Add your test input here\n', 'utf-8');
+            fs.writeFileSync(path.join(problemDir, 'out.txt'), '// Add expected output here\n', 'utf-8');
+        }
+
+        // Create template main.cpp
+        const templatePath = path.join(problemDir, 'main.cpp');
+        if (!fs.existsSync(templatePath)) {
+            await this.createMainCpp(templatePath);
+        }
+
+        progress.report({ increment: 100, message: 'Complete!' });
+
+        // Open main.cpp in editor
+        const doc = await vscode.workspace.openTextDocument(templatePath);
+        await vscode.window.showTextDocument(doc);
+
+        vscode.window.showInformationMessage(`Successfully set up LeetCode problem: ${statement.title}`);
+    }
+
+    private async setupGeeksforgeeksProblem(parsed: ParsedProblemUrl, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+        const { problemName, problemId, url } = parsed;
+        
+        if (!problemName || !problemId) {
+            throw new Error('Invalid GeeksforGeeks URL: problem name or ID not found');
+        }
+
+        progress.report({ increment: 10, message: `Fetching GeeksforGeeks problem...` });
+        
+        // Fetch problem statement
+        const statement = await GeeksforgeeksFetcher.fetchProblemStatement(url);
+        if (!statement) {
+            throw new Error(`Failed to fetch problem statement from ${url}`);
+        }
+
+        progress.report({ increment: 30, message: 'Fetching test cases...' });
+        
+        // Fetch test cases
+        const { inputs, outputs } = await GeeksforgeeksFetcher.fetchTestCases(url);
+
+        // Create problem directory (format: {problemName}-{problemId})
+        const dirName = `${problemName}-${problemId}`;
+        const problemDir = path.join(this.geeksforgeeksPath, dirName);
+        await this.createDirectory(problemDir);
+
+        progress.report({ increment: 50, message: 'Creating files...' });
+
+        // Write problem statement
+        const statementPath = path.join(problemDir, 'problem_statement.txt');
+        const statementContent = GeeksforgeeksFetcher.formatAsMarkdown(statement);
+        fs.writeFileSync(statementPath, statementContent, 'utf-8');
+
+        // Write test cases
+        if (inputs.length > 0 && outputs.length > 0) {
+            // Use first test case for in.txt/out.txt
+            fs.writeFileSync(path.join(problemDir, 'in.txt'), inputs[0], 'utf-8');
+            fs.writeFileSync(path.join(problemDir, 'out.txt'), outputs[0], 'utf-8');
+            
+            // Write additional test cases if available
+            if (inputs.length > 1) {
+                const additionalTests = inputs.slice(1).map((input, idx) => 
+                    `Test Case ${idx + 2}:\n${input}\n`
+                ).join('\n');
+                fs.writeFileSync(path.join(problemDir, 'additional_tests.txt'), additionalTests, 'utf-8');
+            }
+        } else {
+            // Create placeholder files
+            fs.writeFileSync(path.join(problemDir, 'in.txt'), '// Add your test input here\n', 'utf-8');
+            fs.writeFileSync(path.join(problemDir, 'out.txt'), '// Add expected output here\n', 'utf-8');
+        }
+
+        // Create template main.cpp
+        const templatePath = path.join(problemDir, 'main.cpp');
+        if (!fs.existsSync(templatePath)) {
+            await this.createMainCpp(templatePath);
+        }
+
+        progress.report({ increment: 100, message: 'Complete!' });
+
+        // Open main.cpp in editor
+        const doc = await vscode.workspace.openTextDocument(templatePath);
+        await vscode.window.showTextDocument(doc);
+
+        vscode.window.showInformationMessage(`Successfully set up GeeksforGeeks problem: ${statement.title}`);
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    private parseCodeforcesUrl(url: string): { contestId: number; problemIndex: string | null } | null {
+        const parsed = this.parseProblemUrl(url);
+        if (parsed && parsed.platform === 'codeforces' && parsed.contestId) {
+            return {
+                contestId: parsed.contestId,
+                problemIndex: parsed.problemIndex || null
+            };
+        }
         return null;
     }
 

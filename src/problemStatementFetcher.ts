@@ -12,10 +12,14 @@ try {
 
 export interface ProblemStatement {
     title: string;
-    timeLimit: string;
-    memoryLimit: string;
     description: string;
     url: string;
+    platform: 'codeforces' | 'leetcode' | 'geeksforgeeks';
+    // Optional fields
+    timeLimit?: string;
+    memoryLimit?: string;
+    constraints?: string;
+    examples?: Array<{ input: string; output: string; explanation?: string }>;
 }
 
 export class ProblemStatementFetcher {
@@ -96,7 +100,8 @@ export class ProblemStatementFetcher {
                 timeLimit: timeLimit || 'time limit per test2 seconds',
                 memoryLimit: memoryLimit || 'memory limit per test256 megabytes',
                 description,
-                url
+                url,
+                platform: 'codeforces'
             };
         } catch (error: any) {
             console.error(`Error fetching problem statement from ${url}:`, error.message);

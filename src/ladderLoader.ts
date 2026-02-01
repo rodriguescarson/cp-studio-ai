@@ -10,7 +10,7 @@ export interface ProblemInfo {
     name?: string;
     difficulty?: string;
     pattern?: string;
-    source: 'codeforces' | 'leetcode';
+    source: 'codeforces' | 'leetcode' | 'geeksforgeeks';
 }
 
 export interface LadderData {

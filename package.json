@@ -2,7 +2,7 @@
   "name": "cf-studio",
   "displayName": "cfx - codeforce studio",
   "description": "Professional Codeforces contest workspace for VS Code & Cursor. Setup contests instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
@@ -295,6 +295,16 @@
           "type": "string",
           "default": "${workspaceFolder}/contests",
           "description": "Path to contests directory"
+        },
+        "codeforces.leetcodePath": {
+          "type": "string",
+          "default": "${workspaceFolder}/leetcode",
+          "description": "Path to LeetCode problems directory"
+        },
+        "codeforces.geeksforgeeksPath": {
+          "type": "string",
+          "default": "${workspaceFolder}/geeksforgeeks",
+          "description": "Path to GeeksforGeeks problems directory"
         },
         "codeforces.aiProvider": {
           "type": "string",

@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="resources/logo.png" alt="CFX - Codeforces Studio Logo" width="300">
-
 # CFX - Codeforces Studio
 
 **The Professional Codeforces Contest Workspace for VS Code & Cursor**
@@ -18,7 +16,74 @@ _Setup contests, test solutions, get AI-powered analysis, and submit with confid
 
 ## 🚀 Quick Start
 
-### Installation
+### Step 1: Install VS Code or Cursor
+
+**VS Code:**
+- **macOS**: Download from [code.visualstudio.com](https://code.visualstudio.com/download) or install via Homebrew:
+  ```bash
+  brew install --cask visual-studio-code
+  ```
+- **Linux**: Download from [code.visualstudio.com](https://code.visualstudio.com/download) or install via package manager:
+  ```bash
+  # Ubuntu/Debian
+  sudo apt update && sudo apt install code
+  
+  # Fedora/RHEL
+  sudo dnf install code
+  ```
+- **Windows**: Download installer from [code.visualstudio.com](https://code.visualstudio.com/download) and run the `.exe` file
+
+**Cursor:**
+- Download from [cursor.sh](https://cursor.sh) for your platform
+- Follow the installation wizard
+
+### Step 2: Install C++ Compiler
+
+**macOS:**
+```bash
+# Install Xcode Command Line Tools (includes g++)
+xcode-select --install
+
+# Verify installation
+g++ --version
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install build-essential g++
+
+# Verify installation
+g++ --version
+```
+
+**Linux (Fedora/RHEL):**
+```bash
+sudo dnf groupinstall "Development Tools"
+sudo dnf install gcc-c++
+
+# Verify installation
+g++ --version
+```
+
+**Windows:**
+- **Option 1: MinGW-w64** (Recommended)
+  1. Download from [mingw-w64.org](https://www.mingw-w64.org/downloads/)
+  2. Or use MSYS2:
+     ```bash
+     # Install MSYS2 from https://www.msys2.org/
+     # Then in MSYS2 terminal:
+     pacman -S mingw-w64-x86_64-gcc
+     ```
+  3. Add to PATH: `C:\msys64\mingw64\bin`
+  4. Verify: Open Command Prompt and run `g++ --version`
+
+- **Option 2: Visual Studio Build Tools**
+  1. Download [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+  2. Install "Desktop development with C++" workload
+  3. Use `cl.exe` compiler (extension will auto-detect)
+
+### Step 3: Install Extension
 
 **Option 1: Install from VSIX** (Recommended)
 
@@ -27,23 +92,43 @@ _Setup contests, test solutions, get AI-powered analysis, and submit with confid
 3. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 4. Type: `Extensions: Install from VSIX...`
 5. Select the downloaded `.vsix` file
+6. Reload the window when prompted
 
-**Option 2: Install from Source**
+**Option 2: Install from Marketplace** (Coming Soon)
+
+1. Open VS Code/Cursor
+2. Go to Extensions (`Cmd+Shift+X` or `Ctrl+Shift+X`)
+3. Search for "CFX - Codeforces Studio"
+4. Click Install
+
+**Option 3: Install from Source**
 
 ```bash
-cd vscode-extension
+git clone https://github.com/rodriguescarson/codeforces-contest-helper.git
+cd codeforces-contest-helper
 npm install
 npm run compile
 # Then install the .vsix file created in the directory
 ```
 
-### First-Time Setup
+### Step 4: Verify Installation
+
+1. **Open VS Code/Cursor**
+2. **Check Extension**: Look for "CFX Studio" icon in the Activity Bar (left sidebar)
+3. **Test Compiler**: Open terminal (`Ctrl+`` or `Cmd+``) and run:
+   ```bash
+   g++ --version
+   ```
+   You should see version information. If not, check Step 2.
+
+### Step 5: First-Time Setup
 
 1. **Configure AI (Optional but Recommended)**
    - Get a free API key from [OpenRouter.ai](https://openrouter.ai) (supports GPT-4, Claude, and more)
-   - Press `Cmd+Shift+P` → `cfx: Configure API Key`
+   - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
+   - Type: `cfx: Configure API Key`
    - Paste your API key when prompted
-   - Or manually: Settings → Search `codeforces.aiApiKey` → Enter key
+   - Or manually: Settings (`Cmd+,` or `Ctrl+,`) → Search `codeforces.aiApiKey` → Enter key
 
 2. **Setup Your Profile (Optional)**
    - Press `Cmd+Shift+P` → `cfx: Setup Profile`
@@ -52,24 +137,60 @@ npm run compile
 
 3. **You're Ready!** Start solving contests right away.
 
+### Step 6: Run Your First Problem
+
+1. **Setup a Problem**:
+   - Press `Cmd+Shift+P` → `cfx: Setup Contest from URL`
+   - Paste: `https://codeforces.com/contest/2112/problem/A`
+   - Wait for setup to complete
+
+2. **Open the Problem**:
+   - Navigate to `contests/2112/A/main.cpp` in the file explorer
+   - The file will open automatically
+
+3. **Write Your Solution**:
+   - Edit `main.cpp` with your solution
+   - Save the file (`Cmd+S` or `Ctrl+S`)
+
+4. **Run Tests**:
+   - Click the ▶️ **Run Tests** button in the editor toolbar
+   - Or press `Cmd+Shift+P` → `cfx: Run Tests`
+   - View results in the Output panel
+
+5. **Get AI Help** (if configured):
+   - Click ✨ **AI Analysis** for code review
+   - Or click 💬 **Open Chat** for interactive help
+
 ---
 
 ## ✨ Features
 
-### 🎯 One-Click Contest Setup
+### 🎯 One-Click Problem Setup
 
-Paste any Codeforces problem URL and instantly get:
+Paste any problem URL from **Codeforces**, **LeetCode**, or **GeeksforGeeks** and instantly get:
 
-- ✅ Organized directory structure (`contests/{contestId}/{problem}/`)
+- ✅ Organized directory structure
+  - Codeforces: `contests/{contestId}/{problem}/`
+  - LeetCode: `leetcode/{slug}/`
+  - GeeksforGeeks: `geeksforgeeks/{problemName}-{problemId}/`
 - ✅ Test cases automatically fetched
 - ✅ C++ template ready to code
 - ✅ Input/output files prepared
+- ✅ Problem statement saved
 
 **How to use:**
 
 1. Press `Cmd+Shift+P` → `cfx: Setup Contest from URL`
-2. Paste: `https://codeforces.com/contest/2112/problem/A`
+2. Paste any supported URL:
+   - Codeforces: `https://codeforces.com/contest/2112/problem/A`
+   - LeetCode: `https://leetcode.com/problems/two-sum/`
+   - GeeksforGeeks: `https://practice.geeksforgeeks.org/problems/two-sum/1`
 3. Start coding!
+
+**Supported Platforms:**
+- ✅ Codeforces (contests and problemset)
+- ✅ LeetCode (all problems)
+- ✅ GeeksforGeeks (practice problems)
 
 ### ⚡ Instant Test Runner
 
@@ -135,39 +256,87 @@ Stay organized and track your progress:
 
 - **Copy Code**: One-click copy to clipboard for submission
 - **Setup from Contest**: Browse and setup from upcoming contests
+- **Pull Problem Sets**: One-click pull from A2OJ Ladder, NeetCode 150, Love Babbar 450, Striver's Sheet
 - **Refresh Data**: Update contests and profile info
+
+### 📚 Problem Sets Integration
+
+Pull problems from popular curated lists:
+
+- **A2OJ Ladders**: Codeforces problems organized by difficulty
+- **NeetCode 150**: Essential LeetCode problems
+- **Love Babbar 450**: DSA sheet with GeeksforGeeks & LeetCode problems
+- **Striver's Sheet**: Comprehensive LeetCode problem list
+
+**How to use:**
+
+1. Open CFX Studio sidebar
+2. Click problem set buttons (A2OJ, NeetCode, Love Babbar, Striver's)
+3. Select a ladder/problem set
+4. Choose a problem to setup
+5. Start solving!
 
 ---
 
 ## 📖 Detailed Usage Guide
 
-### Setting Up a Contest Problem
+### Setting Up a Problem
 
-**Method 1: From URL**
+**Method 1: From URL** (Supports Codeforces, LeetCode, GeeksforGeeks)
 
 ```
 Cmd+Shift+P → "cfx: Setup Contest from URL"
-→ Paste: https://codeforces.com/contest/2112/problem/A
+→ Paste any supported URL:
+  - Codeforces: https://codeforces.com/contest/2112/problem/A
+  - LeetCode: https://leetcode.com/problems/two-sum/
+  - GeeksforGeeks: https://practice.geeksforgeeks.org/problems/two-sum/1
 ```
 
-**Method 2: From Contest List**
+**Method 2: From Contest List** (Codeforces only)
 
 1. Open CFX Studio sidebar
 2. Click on any contest in "Upcoming Contests"
 3. Select a problem to setup
 
+**Method 3: From Problem Sets** (A2OJ, NeetCode, Love Babbar, Striver's)
+
+1. Open CFX Studio sidebar
+2. Click problem set button (A2OJ, NeetCode, Love Babbar, or Striver's)
+3. Select a ladder/problem set
+4. Choose a problem to setup
+
 ### Running Tests
 
-1. **Open** `contests/{contestId}/{problem}/main.cpp`
+1. **Open** `contests/{contestId}/{problem}/main.cpp` (or `leetcode/{slug}/main.cpp` or `geeksforgeeks/{problem}/main.cpp`)
 2. **Click** the ▶️ button in editor toolbar
 3. **View** results in Output channel
 
 **What happens:**
 
-- Code compiles with `g++`
+- Code compiles with `g++` (or `cl.exe` on Windows if MinGW not available)
 - Runs with `in.txt` as input
 - Compares output with `out.txt`
 - Shows detailed pass/fail results
+
+**Command Line Alternative:**
+
+```bash
+# Navigate to problem directory
+cd contests/2112/A
+
+# Compile
+g++ -std=c++17 -O2 -Wall -o main main.cpp
+
+# Run with test input
+./main < in.txt
+
+# Compare output (Linux/macOS)
+diff <(./main < in.txt) out.txt
+
+# Windows (PowerShell)
+Get-Content in.txt | .\main.exe | Out-File actual.txt
+Compare-Object (Get-Content out.txt) (Get-Content actual.txt)
+```
 
 ### Using AI Analysis
 
@@ -201,10 +370,13 @@ Open Settings (`Cmd+,` or `Ctrl+,`) and search for "codeforces":
 | Setting                   | Description                                                 | Default                       |
 | ------------------------- | ----------------------------------------------------------- | ----------------------------- |
 | `codeforces.contestsPath` | Path to contests directory                                  | `${workspaceFolder}/contests` |
+| `codeforces.leetcodePath` | Path to LeetCode problems directory                        | `${workspaceFolder}/leetcode` |
+| `codeforces.geeksforgeeksPath` | Path to GeeksforGeeks problems directory                  | `${workspaceFolder}/geeksforgeeks` |
 | `codeforces.aiProvider`   | AI provider (`openrouter`, `openai`, `anthropic`, `custom`) | `openrouter`                  |
 | `codeforces.aiApiKey`     | Your API key for AI features                                | (empty)                       |
 | `codeforces.aiModel`      | Model to use (e.g., `openai/gpt-4`)                         | `openai/gpt-4`                |
 | `codeforces.aiBaseUrl`    | Custom API base URL (for custom providers)                  | (empty)                       |
+| `codeforces.username`     | Codeforces username for profile features                    | (empty)                       |
 
 ### Environment Variables (Optional)
 
@@ -264,13 +436,24 @@ Access via Command Palette (`Cmd+Shift+P`):
 ### Required
 
 - **VS Code** 1.80+ or **Cursor** (any version)
-- **C++ Compiler** (`g++` recommended)
+- **C++ Compiler** (`g++` recommended, or `cl.exe` on Windows)
+  - macOS: Xcode Command Line Tools
+  - Linux: `build-essential` package (Ubuntu/Debian) or `Development Tools` (Fedora/RHEL)
+  - Windows: MinGW-w64 or Visual Studio Build Tools
 
 ### Optional
 
 - **AI API Key** - For AI features (get from [OpenRouter.ai](https://openrouter.ai))
 - **Codeforces Account** - For profile features
 - **`cf` CLI Tool** - Alternative test case fetcher (install separately)
+
+### System Requirements
+
+- **macOS**: 10.13+ (High Sierra or later)
+- **Linux**: Any modern distribution (Ubuntu 18.04+, Fedora 30+, etc.)
+- **Windows**: Windows 10 or later
+- **RAM**: 4GB minimum (8GB recommended)
+- **Disk Space**: ~200MB for extension + compiler
 
 ---
 
@@ -284,9 +467,13 @@ Access via Command Palette (`Cmd+Shift+P`):
 
 ### Tests Not Running
 
-- **Verify compiler**: Run `g++ --version` in terminal
-- **Check file location**: Must be in `contests/{contestId}/{problem}/main.cpp`
-- **Check test files**: Ensure `in.txt` and `out.txt` exist
+- **Verify compiler**: 
+  - Open terminal (`Ctrl+`` or `Cmd+``)
+  - Run `g++ --version` (should show version info)
+  - If not found, see [Step 2: Install C++ Compiler](#step-2-install-c-compiler) above
+- **Check file location**: Must be in `contests/{contestId}/{problem}/main.cpp` (or `leetcode/{slug}/main.cpp` or `geeksforgeeks/{problem}/main.cpp`)
+- **Check test files**: Ensure `in.txt` and `out.txt` exist in the same directory as `main.cpp`
+- **Windows-specific**: Ensure MinGW or Visual Studio compiler is in your PATH
 
 ### AI Features Not Working
 

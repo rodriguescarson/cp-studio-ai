@@ -338,13 +338,13 @@ export function activate(context: vscode.ExtensionContext) {
             
             if (ladder.source === 'neetcode') {
                 description = `${ladder.totalCount} LeetCode problems`;
-                detail = 'NeetCode 150 - LeetCode problems (view only)';
+                detail = 'NeetCode 150 - LeetCode problems';
             } else if (ladder.source === 'lovebabbar') {
                 description = `${ladder.totalCount} problems`;
-                detail = 'Love Babbar 450 DSA Sheet - GeeksforGeeks & LeetCode (view only)';
+                detail = 'Love Babbar 450 DSA Sheet - GeeksforGeeks & LeetCode';
             } else if (ladder.source === 'strivers') {
                 description = `${ladder.totalCount} problems`;
-                detail = "Striver's Sheet - LeetCode problems (view only)";
+                detail = "Striver's Sheet - LeetCode problems";
             } else {
                 // A2OJ ladders
                 description = `${ladder.codeforcesCount} Codeforces problems`;
@@ -379,81 +379,45 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        // Handle NeetCode, Love Babbar, and Striver's problems differently (they're LeetCode/GeeksforGeeks)
-        if (selected.source === 'neetcode' || selected.source === 'lovebabbar' || selected.source === 'strivers') {
-            // For LeetCode problems, show them in a list and allow opening links
-            const problemItems = problems.map(p => ({
-                label: p.name || p.url,
-                description: p.difficulty ? `${p.difficulty} • ${p.pattern || ''}` : '',
-                detail: p.url,
-                url: p.url
-            }));
-
-            const chosen = await vscode.window.showQuickPick(problemItems, {
-                placeHolder: `Select a problem from ${selected.label} (${problems.length} problems)`,
-                canPickMany: false
-            });
-
-            if (chosen) {
-                await vscode.env.openExternal(vscode.Uri.parse(chosen.url));
-            }
-            return;
-        }
-
-        // For Codeforces problems, proceed with setup
-        // Confirm before proceeding
-        const confirm = await vscode.window.showInformationMessage(
-            `Pull ${problems.length} problems from ${selected.label}?`,
-            'Yes',
-            'No'
-        );
-
-        if (confirm !== 'Yes') {
-            return;
-        }
-
-        // Setup each problem
-        await vscode.window.withProgress({
-            location: vscode.ProgressLocation.Notification,
-            title: `Pulling ${selected.label}...`,
-            cancellable: true
-        }, async (progress, token) => {
-            const ladderDirName = selected.ladderName.replace('.html', '').toLowerCase();
+        // Show problem selection for all platforms (unified experience)
+        const problemItems = problems.map(p => {
+            let label = p.name || p.url;
+            let description = '';
             
-            for (let i = 0; i < problems.length; i++) {
-                if (token.isCancellationRequested) {
-                    vscode.window.showInformationMessage('Ladder pull cancelled');
-                    break;
-                }
-
-                const problem = problems[i];
-                if (!problem.contestId || !problem.problemIndex) {
-                    continue; // Skip non-Codeforces problems
-                }
-
-                progress.report({
-                    increment: 100 / problems.length,
-                    message: `Setting up problem ${i + 1}/${problems.length}: ${problem.contestId}${problem.problemIndex}`
-                });
-
-                try {
-                    // Convert problemset URL to contest URL format
-                    const contestUrl = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.problemIndex}`;
-                    await contestSetup.setupFromUrl(contestUrl);
-                } catch (error: any) {
-                    console.error(`Failed to setup problem ${problem.contestId}${problem.problemIndex}:`, error);
-                    // Continue with next problem
-                }
-
-                // Small delay to avoid overwhelming the API
-                await new Promise(resolve => setTimeout(resolve, 500));
+            if (p.source === 'codeforces' && p.contestId && p.problemIndex) {
+                description = `Codeforces ${p.contestId}${p.problemIndex}`;
+            } else if (p.source === 'leetcode') {
+                description = p.difficulty ? `${p.difficulty} • ${p.pattern || ''}` : 'LeetCode';
+            } else if (p.source === 'geeksforgeeks') {
+                description = p.difficulty ? `${p.difficulty}` : 'GeeksforGeeks';
             }
+            
+            return {
+                label: label,
+                description: description,
+                detail: p.url,
+                url: p.url,
+                source: p.source
+            };
         });
 
-        vscode.window.showInformationMessage(
-            `Successfully pulled ${problems.length} problems from ${selected.label}!`
-        );
-        contestsProvider.refresh();
+        const chosen = await vscode.window.showQuickPick(problemItems, {
+            placeHolder: `Select a problem from ${selected.label} (${problems.length} problems)`,
+            canPickMany: false
+        });
+
+        if (!chosen) {
+            return; // User cancelled
+        }
+
+        // Use unified setup for all platforms
+        try {
+            await contestSetup.setupFromUrl(chosen.url);
+        } catch (error: any) {
+            const errorMessage = error?.message || String(error);
+            vscode.window.showErrorMessage(`Failed to setup problem: ${errorMessage}`);
+            console.error('Problem setup error:', error);
+        }
     }
 
     const pullLadderCommand = vscode.commands.registerCommand('codeforces.pullLadder', async () => {
