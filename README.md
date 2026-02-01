@@ -22,6 +22,8 @@ _One extension. Multiple platforms. Zero confusion. Everything you need to maste
 
 **Open Source:** CP Studio is open source software (MIT License). Contributions welcome! See the [Contributing](#-contributing) section for details.
 
+**🌐 Project Page:** Visit [carsonrodrigues.com/cp-studio](https://www.carsonrodrigues.com/cp-studio) for more information, demos, and updates.
+
 ---
 
 ## ✨ Features
@@ -703,6 +705,7 @@ See the [LICENSE](LICENSE) file for full details.
 Built with ❤️ for competitive programmers worldwide.
 
 - 🌐 Website: [carsonrodrigues.com](https://carsonrodrigues.com)
+- 🚀 CP Studio Page: [carsonrodrigues.com/cp-studio](https://www.carsonrodrigues.com/cp-studio)
 - 💻 GitHub: [@rodriguescarson](https://github.com/rodriguescarson)
 - 💼 LinkedIn: [rodriguescarson](https://linkedin.com/in/rodriguescarson)
 - ☕ Buy Me a Coffee: [buymeacoffee.com/rodriguescarson](https://buymeacoffee.com/rodriguescarson)
@@ -723,7 +726,7 @@ Built with ❤️ for competitive programmers worldwide.
 
 **Made with ❤️ for competitive programmers**
 
-[⭐ Star on GitHub](https://github.com/rodriguescarson/codeforces-contest-helper) • [📝 Report Issue](https://github.com/rodriguescarson/codeforces-contest-helper/issues) • [📖 Documentation](https://github.com/rodriguescarson/codeforces-contest-helper#readme)
+[⭐ Star on GitHub](https://github.com/rodriguescarson/codeforces-contest-helper) • [🌐 Project Page](https://www.carsonrodrigues.com/cp-studio) • [📝 Report Issue](https://github.com/rodriguescarson/codeforces-contest-helper/issues) • [📖 Documentation](https://github.com/rodriguescarson/codeforces-contest-helper#readme)
 
 **One extension. Multiple platforms. Zero confusion.**
 
