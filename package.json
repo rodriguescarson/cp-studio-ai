@@ -2,7 +2,7 @@
   "name": "cf-studio",
   "displayName": "CP Studio",
   "description": "The All-in-One Competitive Programming Workspace for VS Code & Cursor. Setup problems from Codeforces, LeetCode, and GeeksforGeeks instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
@@ -36,6 +36,7 @@
   ],
   "activationEvents": [
     "onStartupFinished",
+    "onLanguage:cpp",
     "onCommand:codeforces.setupFromUrl",
     "onCommand:codeforces.runTests",
     "onCommand:codeforces.aiAnalysis",
@@ -265,6 +266,12 @@
     "views": {
       "cfStudio": [
         {
+          "id": "cfStudioProfileView",
+          "name": "Profile Stats",
+          "type": "webview",
+          "when": "true"
+        },
+        {
           "id": "cfStudioContests",
           "name": "Upcoming Contests",
           "when": "true"
@@ -272,12 +279,6 @@
         {
           "id": "cfStudioChatView",
           "name": "Chat",
-          "type": "webview",
-          "when": "true"
-        },
-        {
-          "id": "cfStudioProfileView",
-          "name": "Profile Stats",
           "type": "webview",
           "when": "true"
         },

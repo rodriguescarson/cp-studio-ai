@@ -31,9 +31,12 @@ let solvedProblemsViewProvider: SolvedProblemsViewProvider;
 let fileDecorationProvider: ProblemFileDecorationProvider;
 
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     console.log('CP Studio extension is now active!');
     extensionContext = context;
+
+    // Check if this is the first activation after installation
+    const isFirstActivation = context.globalState.get<boolean>('cfStudio.firstActivation', true);
 
     try {
         // Initialize components
@@ -569,8 +572,38 @@ export function activate(context: vscode.ExtensionContext) {
         });
     }
 
-    // Show welcome message
-    vscode.window.showInformationMessage('CP Studio is ready! Use the command palette to get started.');
+    // Handle first activation - open profile view and show reload prompt
+    if (isFirstActivation) {
+        // Mark that we've activated at least once
+        await context.globalState.update('cfStudio.firstActivation', false);
+        
+        // Open profile view after a short delay to ensure it's registered
+        setTimeout(async () => {
+            try {
+                // Show the profile view if it's already initialized
+                if (profileViewProvider) {
+                    profileViewProvider.show();
+                }
+                // Also try to focus it to ensure it's visible
+                await vscode.commands.executeCommand('cfStudioProfileView.focus');
+            } catch (error) {
+                console.log('Could not open profile view:', error);
+            }
+            
+            // Show reload prompt
+            vscode.window.showInformationMessage(
+                'CP Studio has been installed! Please reload the window to activate all features.',
+                'Reload Window'
+            ).then(selection => {
+                if (selection === 'Reload Window') {
+                    vscode.commands.executeCommand('workbench.action.reloadWindow');
+                }
+            });
+        }, 1500);
+    } else {
+        // Show welcome message for subsequent activations
+        vscode.window.showInformationMessage('CP Studio is ready! Use the command palette to get started.');
+    }
 }
 
 export function deactivate() {}

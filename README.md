@@ -20,6 +20,8 @@ _One extension. Multiple platforms. Zero confusion. Everything you need to maste
 
 **Why CP Studio?** Because competitive programming shouldn't require juggling multiple tools, browser tabs, and workflows. One extension. One workflow. One focus: solving problems.
 
+**Open Source:** CP Studio is open source software (MIT License). Contributions welcome! See the [Contributing](#-contributing) section for details.
+
 ---
 
 ## ✨ Features
@@ -488,18 +490,209 @@ If the CP Studio logo appears white or not displaying properly:
 
 ## 🤝 Contributing
 
-Contributions welcome! This extension is built by the community, for the community.
+**CP Studio is open source!** Contributions are welcome and greatly appreciated. This extension is built by the community, for the community.
 
-- 🐛 [Report Issues](https://github.com/rodriguescarson/codeforces-contest-helper/issues)
-- 💡 [Request Features](https://github.com/rodriguescarson/codeforces-contest-helper/issues)
-- 🔧 [Submit Pull Requests](https://github.com/rodriguescarson/codeforces-contest-helper/pulls)
-- 📖 [Improve Documentation](https://github.com/rodriguescarson/codeforces-contest-helper)
+### 🚀 Getting Started
+
+1. **Fork the Repository**
+   ```bash
+   git clone https://github.com/rodriguescarson/codeforces-contest-helper.git
+   cd codeforces-contest-helper
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Build the Extension**
+   ```bash
+   npm run compile
+   # Or watch mode for development
+   npm run watch
+   ```
+
+4. **Run in Development Mode**
+   - Open the project in VS Code or Cursor
+   - Press `F5` to launch Extension Development Host
+   - A new window will open with the extension loaded
+   - Make changes and reload the window (`Cmd+R` or `Ctrl+R`) to see updates
+
+### 📝 Development Workflow
+
+1. **Create a Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   # or
+   git checkout -b fix/your-bug-fix
+   ```
+
+2. **Make Your Changes**
+   - Write clean, readable code
+   - Follow TypeScript best practices
+   - Add comments for complex logic
+   - Update documentation if needed
+
+3. **Test Your Changes**
+   - Test in Extension Development Host (`F5`)
+   - Verify features work across platforms (Codeforces, LeetCode, GeeksforGeeks)
+   - Test edge cases and error handling
+
+4. **Commit Your Changes**
+   ```bash
+   git add .
+   git commit -m "feat: add new feature description"
+   # Use conventional commits: feat:, fix:, docs:, refactor:, etc.
+   ```
+
+5. **Push and Create Pull Request**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+   - Open a Pull Request on GitHub
+   - Fill out the PR template
+   - Link any related issues
+
+### 🎯 Contribution Guidelines
+
+#### Code Style
+- **TypeScript**: Use TypeScript for all new code
+- **Formatting**: Follow existing code style
+- **Naming**: Use descriptive variable and function names
+- **Comments**: Add JSDoc comments for public functions
+- **Error Handling**: Always handle errors gracefully
+
+#### What to Contribute
+
+**🐛 Bug Fixes**
+- Fix bugs you encounter
+- Improve error messages
+- Add better error handling
+
+**✨ New Features**
+- Support for new competitive programming platforms
+- UI/UX improvements
+- Performance optimizations
+- New problem set integrations
+
+**📖 Documentation**
+- Improve README
+- Add code comments
+- Write usage examples
+- Create tutorials
+
+**🧪 Testing**
+- Add unit tests
+- Test edge cases
+- Verify cross-platform compatibility
+
+#### Pull Request Process
+
+1. **Before Submitting**
+   - Ensure code compiles (`npm run compile`)
+   - Test your changes thoroughly
+   - Update documentation if needed
+   - Follow the existing code style
+
+2. **PR Description**
+   - Clearly describe what changes you made
+   - Explain why the changes are needed
+   - Include screenshots for UI changes
+   - Reference related issues
+
+3. **Review Process**
+   - Maintainers will review your PR
+   - Address any feedback or requested changes
+   - Be patient and responsive to comments
+
+### 🏗️ Project Structure
+
+```
+cp-studio/
+├── src/                    # TypeScript source files
+│   ├── extension.ts        # Main entry point
+│   ├── contestSetup.ts     # Problem setup logic
+│   ├── testRunner.ts       # Test execution
+│   ├── aiAnalyzer.ts       # AI integration
+│   └── ...                 # Other modules
+├── resources/              # Assets (logo, icons)
+├── data/                   # Problem set data (A2OJ, NeetCode, etc.)
+├── package.json            # Extension manifest
+├── tsconfig.json           # TypeScript config
+└── README.md               # Documentation
+```
+
+### 🐛 Reporting Issues
+
+Found a bug or have a feature request?
+
+1. **Check Existing Issues**
+   - Search GitHub issues to avoid duplicates
+   - Check if it's already being worked on
+
+2. **Create an Issue**
+   - Use the issue template
+   - Provide clear description
+   - Include steps to reproduce (for bugs)
+   - Add screenshots if relevant
+   - Specify your OS and VS Code/Cursor version
+
+### 💡 Feature Requests
+
+Have an idea for a new feature?
+
+1. **Check Existing Requests**
+   - Search for similar feature requests
+   - Add your use case to existing discussions
+
+2. **Create Feature Request**
+   - Use the feature request template
+   - Describe the feature clearly
+   - Explain the use case
+   - Consider implementation approach
+
+### 📚 Resources for Contributors
+
+- **VS Code Extension API**: https://code.visualstudio.com/api
+- **TypeScript Handbook**: https://www.typescriptlang.org/docs/
+- **VS Code Extension Samples**: https://github.com/microsoft/vscode-extension-samples
+
+### 🤝 Code of Conduct
+
+- Be respectful and inclusive
+- Welcome newcomers and help them get started
+- Focus on constructive feedback
+- Celebrate contributions of all sizes
+
+### 📧 Questions?
+
+- 💬 Open a [Discussion](https://github.com/rodriguescarson/codeforces-contest-helper/discussions)
+- 🐛 Create an [Issue](https://github.com/rodriguescarson/codeforces-contest-helper/issues)
+- 📧 Email: rodriguescarson@gmail.com
+
+**Thank you for contributing to CP Studio!** 🎉
 
 ---
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) file for details.
+**CP Studio is open source software licensed under the MIT License.**
+
+This means you are free to:
+- ✅ Use CP Studio for any purpose (commercial or personal)
+- ✅ Modify the code to suit your needs
+- ✅ Distribute the software
+- ✅ Use it privately
+
+**Requirements:**
+- Include the original copyright notice and license text
+
+**No Warranty:**
+- The software is provided "as is" without warranty
+
+See the [LICENSE](LICENSE) file for full details.
+
+**Why MIT?** MIT is one of the most permissive open source licenses, making it easy for developers to use, modify, and contribute to CP Studio. Perfect for a community-driven project!
 
 ---
 
@@ -512,6 +705,7 @@ Built with ❤️ for competitive programmers worldwide.
 - 🌐 Website: [carsonrodrigues.com](https://carsonrodrigues.com)
 - 💻 GitHub: [@rodriguescarson](https://github.com/rodriguescarson)
 - 💼 LinkedIn: [rodriguescarson](https://linkedin.com/in/rodriguescarson)
+- ☕ Buy Me a Coffee: [buymeacoffee.com/rodriguescarson](https://buymeacoffee.com/rodriguescarson)
 - 📧 Email: rodriguescarson@gmail.com
 
 ---

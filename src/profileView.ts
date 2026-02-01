@@ -22,6 +22,12 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    public show(): void {
+        if (this._view) {
+            this._view.show(true);
+        }
+    }
+
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,

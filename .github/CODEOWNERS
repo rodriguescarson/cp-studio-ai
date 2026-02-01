@@ -1,0 +1,19 @@
+# CP Studio Code Owners
+# This file defines code owners for different parts of the repository
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @rodriguescarson
+
+# Core extension files
+/src/ @rodriguescarson
+/package.json @rodriguescarson
+/tsconfig.json @rodriguescarson
+
+# Documentation
+/README.md @rodriguescarson
+/CONTRIBUTING.md @rodriguescarson
+/.github/ @rodriguescarson
+
+# Resources
+/resources/ @rodriguescarson
