@@ -6,8 +6,8 @@ Thank you for your interest in contributing to CP Studio! This document provides
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/rodriguescarson/cp-studio.git
-   cd codeforces-contest-helper
+   git clone https://github.com/rodriguescarson/cp-studio-ai.git
+   cd cp-studio-ai
    ```
 
 2. **Install Dependencies**
@@ -37,7 +37,7 @@ Thank you for your interest in contributing to CP Studio! This document provides
 ### Project Structure
 
 ```
-cp-studio/
+cp-studio-ai/
 ├── src/                    # TypeScript source files
 │   ├── extension.ts        # Main entry point
 │   ├── contestSetup.ts     # Problem setup logic
@@ -251,8 +251,8 @@ async setupFromUrl(url: string): Promise<void> {
 
 ## 📧 Getting Help
 
-- 💬 [GitHub Discussions](https://github.com/rodriguescarson/cp-studio/discussions)
-- 🐛 [GitHub Issues](https://github.com/rodriguescarson/cp-studio/issues)
+- 💬 [GitHub Discussions](https://github.com/rodriguescarson/cp-studio-ai/discussions)
+- 🐛 [GitHub Issues](https://github.com/rodriguescarson/cp-studio-ai/issues)
 - 📧 Email: rodriguescarson@gmail.com
 
 ## 📄 License

@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Community Discussions
+    url: https://github.com/rodriguescarson/cp-studio-ai/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📖 Documentation
+    url: https://github.com/rodriguescarson/cp-studio-ai#readme
+    about: Check the README and documentation for answers
+  - name: 🔒 Security Issue
+    url: https://github.com/rodriguescarson/cp-studio-ai/security/advisories/new
+    about: Report a security vulnerability (please don't use public issues)

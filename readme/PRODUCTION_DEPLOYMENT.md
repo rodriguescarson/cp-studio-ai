@@ -223,5 +223,5 @@ Users need to configure:
 
 For issues or questions:
 
-- GitHub Issues: https://github.com/rodriguescarson/cp-studio/issues
+- GitHub Issues: https://github.com/rodriguescarson/cp-studio-ai/issues
 - Check TROUBLESHOOTING.md for common issues

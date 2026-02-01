@@ -22,7 +22,7 @@ _One extension. Multiple platforms. Zero confusion. Everything you need to maste
 
 **Open Source:** CP Studio is open source software (MIT License). Contributions welcome! See the [Contributing](#-contributing) section for details.
 
-**🌐 Project Page:** Visit [carsonrodrigues.com/cp-studio](https://www.carsonrodrigues.com/cp-studio) for more information, demos, and updates.
+**🌐 Project Page:** Visit [carsonrodrigues.com/cp-studio-ai](https://www.carsonrodrigues.com/cp-studio-ai) for more information, demos, and updates.
 
 ---
 
@@ -498,8 +498,8 @@ If the CP Studio logo appears white or not displaying properly:
 
 1. **Fork the Repository**
    ```bash
-   git clone https://github.com/rodriguescarson/cp-studio.git
-   cd codeforces-contest-helper
+   git clone https://github.com/rodriguescarson/cp-studio-ai.git
+   cd cp-studio-ai
    ```
 
 2. **Install Dependencies**
@@ -610,7 +610,7 @@ If the CP Studio logo appears white or not displaying properly:
 ### 🏗️ Project Structure
 
 ```
-cp-studio/
+cp-studio-ai/
 ├── src/                    # TypeScript source files
 │   ├── extension.ts        # Main entry point
 │   ├── contestSetup.ts     # Problem setup logic
@@ -668,8 +668,8 @@ Have an idea for a new feature?
 
 ### 📧 Questions?
 
-- 💬 Open a [Discussion](https://github.com/rodriguescarson/cp-studio/discussions)
-- 🐛 Create an [Issue](https://github.com/rodriguescarson/cp-studio/issues)
+- 💬 Open a [Discussion](https://github.com/rodriguescarson/cp-studio-ai/discussions)
+- 🐛 Create an [Issue](https://github.com/rodriguescarson/cp-studio-ai/issues)
 - 📧 Email: rodriguescarson@gmail.com
 
 **Thank you for contributing to CP Studio!** 🎉
@@ -705,7 +705,7 @@ See the [LICENSE](LICENSE) file for full details.
 Built with ❤️ for competitive programmers worldwide.
 
 - 🌐 Website: [carsonrodrigues.com](https://carsonrodrigues.com)
-- 🚀 CP Studio Page: [carsonrodrigues.com/cp-studio](https://www.carsonrodrigues.com/cp-studio)
+- 🚀 CP Studio Page: [carsonrodrigues.com/cp-studio-ai](https://www.carsonrodrigues.com/cp-studio-ai)
 - 💻 GitHub: [@rodriguescarson](https://github.com/rodriguescarson)
 - 💼 LinkedIn: [rodriguescarson](https://linkedin.com/in/rodriguescarson)
 - ☕ Buy Me a Coffee: [buymeacoffee.com/rodriguescarson](https://buymeacoffee.com/rodriguescarson)
@@ -726,7 +726,7 @@ Built with ❤️ for competitive programmers worldwide.
 
 **Made with ❤️ for competitive programmers**
 
-[⭐ Star on GitHub](https://github.com/rodriguescarson/cp-studio) • [🌐 Project Page](https://www.carsonrodrigues.com/cp-studio) • [📝 Report Issue](https://github.com/rodriguescarson/cp-studio/issues) • [📖 Documentation](https://github.com/rodriguescarson/cp-studio#readme)
+[⭐ Star on GitHub](https://github.com/rodriguescarson/cp-studio-ai) • [🌐 Project Page](https://www.carsonrodrigues.com/cp-studio-ai) • [📝 Report Issue](https://github.com/rodriguescarson/cp-studio-ai/issues) • [📖 Documentation](https://github.com/rodriguescarson/cp-studio-ai#readme)
 
 **One extension. Multiple platforms. Zero confusion.**
 

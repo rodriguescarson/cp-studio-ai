@@ -1,8 +1,8 @@
 {
-  "name": "cf-studio",
-  "displayName": "CP Studio",
+  "name": "cp-studio-ai",
+  "displayName": "CP Studio AI",
   "description": "The All-in-One Competitive Programming Workspace for VS Code & Cursor. Setup problems from Codeforces, LeetCode, and GeeksforGeeks instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
@@ -11,11 +11,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rodriguescarson/cp-studio"
+    "url": "https://github.com/rodriguescarson/cp-studio-ai"
   },
-  "homepage": "https://www.carsonrodrigues.com/cp-studio",
+  "homepage": "https://www.carsonrodrigues.com/cp-studio-ai",
   "bugs": {
-    "url": "https://github.com/rodriguescarson/cp-studio/issues"
+    "url": "https://github.com/rodriguescarson/cp-studio-ai/issues"
   },
   "keywords": [
     "codeforces",

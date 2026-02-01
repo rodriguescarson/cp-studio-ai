@@ -51,7 +51,7 @@ Closes #
 - [ ] My changes generate no new warnings or errors
 - [ ] I have tested my changes thoroughly
 - [ ] I have checked that my changes don't break existing functionality
-- [ ] I have updated the CHANGELOG (if applicable)
+- [ ] I have updated the CHANGELOG.md (if applicable)
 
 ## 📋 Additional Notes
 
