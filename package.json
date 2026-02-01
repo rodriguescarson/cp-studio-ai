@@ -2,7 +2,7 @@
   "name": "cf-studio",
   "displayName": "cfx - codeforce studio",
   "description": "Professional Codeforces contest workspace for VS Code & Cursor. Setup contests instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
@@ -49,6 +49,10 @@
     "onView:cfStudioChatView",
     "onView:cfStudioProfileView",
     "onCommand:codeforces.pullLadder",
+    "onCommand:codeforces.pullA2OJLadder",
+    "onCommand:codeforces.pullNeetCode",
+    "onCommand:codeforces.pullLoveBabbar",
+    "onCommand:codeforces.pullStrivers",
     "onCommand:codeforces.refreshSolvedProblems",
     "onCommand:codeforces.showSolvedProblems",
     "onView:cfStudioSolvedProblemsView"
@@ -127,8 +131,28 @@
       },
       {
         "command": "codeforces.pullLadder",
-        "title": "cfx: Pull A2OJ Ladder",
+        "title": "cfx: Pull Ladder (All)",
         "icon": "$(download)"
+      },
+      {
+        "command": "codeforces.pullA2OJLadder",
+        "title": "cfx: A2OJ Ladders",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "codeforces.pullNeetCode",
+        "title": "cfx: NeetCode 150",
+        "icon": "$(book)"
+      },
+      {
+        "command": "codeforces.pullLoveBabbar",
+        "title": "cfx: Love Babbar 450",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "codeforces.pullStrivers",
+        "title": "cfx: Striver's Sheet",
+        "icon": "$(star)"
       },
       {
         "command": "codeforces.refreshSolvedProblems",
@@ -164,6 +188,26 @@
         {
           "command": "codeforces.refreshContests",
           "when": "view == cfStudioContests",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.pullA2OJLadder",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.pullNeetCode",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.pullLoveBabbar",
+          "when": "view == cfStudioChatView",
+          "group": "navigation"
+        },
+        {
+          "command": "codeforces.pullStrivers",
+          "when": "view == cfStudioChatView",
           "group": "navigation"
         },
         {

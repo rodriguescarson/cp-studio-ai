@@ -319,143 +319,195 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const pullLadderCommand = vscode.commands.registerCommand('codeforces.pullLadder', async () => {
-        try {
-            // Get available ladders
-            const ladders = await ladderLoader.getAvailableLadders();
-            
-            if (ladders.length === 0) {
-                vscode.window.showErrorMessage('No ladders or problem sets found');
-                return;
-            }
+    // Helper function to show problem selection and handle setup/browsing
+    async function showProblemSelection(ladders: Array<{ name: string; codeforcesCount: number; totalCount: number; source: 'a2oj' | 'neetcode' | 'lovebabbar' | 'strivers' }>, sourceFilter?: 'a2oj' | 'neetcode' | 'lovebabbar' | 'strivers'): Promise<void> {
+        // Filter by source if specified
+        const filteredLadders = sourceFilter 
+            ? ladders.filter(l => l.source === sourceFilter)
+            : ladders;
 
-            // Show quick pick to select ladder
-            const items = ladders.map(ladder => {
-                let description = '';
-                let detail = '';
-                
-                if (ladder.source === 'neetcode') {
-                    description = `${ladder.totalCount} LeetCode problems`;
-                    detail = 'NeetCode 150 - LeetCode problems (view only)';
-                } else if (ladder.source === 'lovebabbar') {
-                    description = `${ladder.totalCount} problems`;
-                    detail = 'Love Babbar 450 DSA Sheet - GeeksforGeeks & LeetCode (view only)';
-                } else if (ladder.source === 'strivers') {
-                    description = `${ladder.totalCount} problems`;
-                    detail = "Striver's Sheet - LeetCode problems (view only)";
-                } else {
-                    // A2OJ ladders
-                    description = `${ladder.codeforcesCount} Codeforces problems`;
-                    detail = ladder.totalCount > ladder.codeforcesCount 
-                        ? `Total: ${ladder.totalCount} problems (${ladder.totalCount - ladder.codeforcesCount} non-Codeforces)`
-                        : 'A2OJ Ladder - Codeforces problems';
+        if (filteredLadders.length === 0) {
+            vscode.window.showErrorMessage(`No ${sourceFilter || 'ladders or problem sets'} found`);
+            return;
+        }
+
+        // Show quick pick to select ladder
+        const items = filteredLadders.map(ladder => {
+            let description = '';
+            let detail = '';
+            
+            if (ladder.source === 'neetcode') {
+                description = `${ladder.totalCount} LeetCode problems`;
+                detail = 'NeetCode 150 - LeetCode problems (view only)';
+            } else if (ladder.source === 'lovebabbar') {
+                description = `${ladder.totalCount} problems`;
+                detail = 'Love Babbar 450 DSA Sheet - GeeksforGeeks & LeetCode (view only)';
+            } else if (ladder.source === 'strivers') {
+                description = `${ladder.totalCount} problems`;
+                detail = "Striver's Sheet - LeetCode problems (view only)";
+            } else {
+                // A2OJ ladders
+                description = `${ladder.codeforcesCount} Codeforces problems`;
+                detail = ladder.totalCount > ladder.codeforcesCount 
+                    ? `Total: ${ladder.totalCount} problems (${ladder.totalCount - ladder.codeforcesCount} non-Codeforces)`
+                    : 'A2OJ Ladder - Codeforces problems';
+            }
+            
+            return {
+                label: ladder.name.replace('.html', ''),
+                description: description,
+                detail: detail,
+                ladderName: ladder.name,
+                source: ladder.source
+            };
+        });
+
+        const selected = await vscode.window.showQuickPick(items, {
+            placeHolder: `Select from ${sourceFilter || 'available options'}`,
+            matchOnDescription: true
+        });
+
+        if (!selected) {
+            return; // User cancelled
+        }
+
+        // Get problems from selected ladder
+        const problems = await ladderLoader.getLadderProblems(selected.ladderName);
+        
+        if (problems.length === 0) {
+            vscode.window.showWarningMessage(`No problems found in ${selected.label}`);
+            return;
+        }
+
+        // Handle NeetCode, Love Babbar, and Striver's problems differently (they're LeetCode/GeeksforGeeks)
+        if (selected.source === 'neetcode' || selected.source === 'lovebabbar' || selected.source === 'strivers') {
+            // For LeetCode problems, show them in a list and allow opening links
+            const problemItems = problems.map(p => ({
+                label: p.name || p.url,
+                description: p.difficulty ? `${p.difficulty} • ${p.pattern || ''}` : '',
+                detail: p.url,
+                url: p.url
+            }));
+
+            const chosen = await vscode.window.showQuickPick(problemItems, {
+                placeHolder: `Select a problem from ${selected.label} (${problems.length} problems)`,
+                canPickMany: false
+            });
+
+            if (chosen) {
+                await vscode.env.openExternal(vscode.Uri.parse(chosen.url));
+            }
+            return;
+        }
+
+        // For Codeforces problems, proceed with setup
+        // Confirm before proceeding
+        const confirm = await vscode.window.showInformationMessage(
+            `Pull ${problems.length} problems from ${selected.label}?`,
+            'Yes',
+            'No'
+        );
+
+        if (confirm !== 'Yes') {
+            return;
+        }
+
+        // Setup each problem
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: `Pulling ${selected.label}...`,
+            cancellable: true
+        }, async (progress, token) => {
+            const ladderDirName = selected.ladderName.replace('.html', '').toLowerCase();
+            
+            for (let i = 0; i < problems.length; i++) {
+                if (token.isCancellationRequested) {
+                    vscode.window.showInformationMessage('Ladder pull cancelled');
+                    break;
                 }
-                
-                return {
-                    label: ladder.name.replace('.html', ''),
-                    description: description,
-                    detail: detail,
-                    ladderName: ladder.name,
-                    source: ladder.source
-                };
-            });
 
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Select a ladder to pull problems from',
-                matchOnDescription: true
-            });
+                const problem = problems[i];
+                if (!problem.contestId || !problem.problemIndex) {
+                    continue; // Skip non-Codeforces problems
+                }
 
-            if (!selected) {
-                return; // User cancelled
-            }
-
-            // Get problems from selected ladder
-            const problems = await ladderLoader.getLadderProblems(selected.ladderName);
-            
-            if (problems.length === 0) {
-                vscode.window.showWarningMessage(`No problems found in ${selected.label}`);
-                return;
-            }
-
-            // Handle NeetCode, Love Babbar, and Striver's problems differently (they're LeetCode/GeeksforGeeks)
-            if (selected.source === 'neetcode' || selected.source === 'lovebabbar' || selected.source === 'strivers') {
-                // For LeetCode problems, show them in a list and allow opening links
-                const problemItems = problems.map(p => ({
-                    label: p.name || p.url,
-                    description: p.difficulty ? `${p.difficulty} • ${p.pattern || ''}` : '',
-                    detail: p.url,
-                    url: p.url
-                }));
-
-                const chosen = await vscode.window.showQuickPick(problemItems, {
-                    placeHolder: `Select a problem from ${selected.label} (${problems.length} problems)`,
-                    canPickMany: false
+                progress.report({
+                    increment: 100 / problems.length,
+                    message: `Setting up problem ${i + 1}/${problems.length}: ${problem.contestId}${problem.problemIndex}`
                 });
 
-                if (chosen) {
-                    await vscode.env.openExternal(vscode.Uri.parse(chosen.url));
+                try {
+                    // Convert problemset URL to contest URL format
+                    const contestUrl = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.problemIndex}`;
+                    await contestSetup.setupFromUrl(contestUrl);
+                } catch (error: any) {
+                    console.error(`Failed to setup problem ${problem.contestId}${problem.problemIndex}:`, error);
+                    // Continue with next problem
                 }
-                return;
+
+                // Small delay to avoid overwhelming the API
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
+        });
 
-            // For Codeforces problems, proceed with setup
-            // Confirm before proceeding
-            const confirm = await vscode.window.showInformationMessage(
-                `Pull ${problems.length} problems from ${selected.label}?`,
-                'Yes',
-                'No'
-            );
+        vscode.window.showInformationMessage(
+            `Successfully pulled ${problems.length} problems from ${selected.label}!`
+        );
+        contestsProvider.refresh();
+    }
 
-            if (confirm !== 'Yes') {
-                return;
-            }
-
-            // Setup each problem
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: `Pulling ${selected.label}...`,
-                cancellable: true
-            }, async (progress, token) => {
-                const ladderDirName = selected.ladderName.replace('.html', '').toLowerCase();
-                
-                for (let i = 0; i < problems.length; i++) {
-                    if (token.isCancellationRequested) {
-                        vscode.window.showInformationMessage('Ladder pull cancelled');
-                        break;
-                    }
-
-                    const problem = problems[i];
-                    if (!problem.contestId || !problem.problemIndex) {
-                        continue; // Skip non-Codeforces problems
-                    }
-
-                    progress.report({
-                        increment: 100 / problems.length,
-                        message: `Setting up problem ${i + 1}/${problems.length}: ${problem.contestId}${problem.problemIndex}`
-                    });
-
-                    try {
-                        // Convert problemset URL to contest URL format
-                        const contestUrl = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.problemIndex}`;
-                        await contestSetup.setupFromUrl(contestUrl);
-                    } catch (error: any) {
-                        console.error(`Failed to setup problem ${problem.contestId}${problem.problemIndex}:`, error);
-                        // Continue with next problem
-                    }
-
-                    // Small delay to avoid overwhelming the API
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-            });
-
-            vscode.window.showInformationMessage(
-                `Successfully pulled ${problems.length} problems from ${selected.label}!`
-            );
-            contestsProvider.refresh();
+    const pullLadderCommand = vscode.commands.registerCommand('codeforces.pullLadder', async () => {
+        try {
+            const ladders = await ladderLoader.getAvailableLadders();
+            await showProblemSelection(ladders);
         } catch (error: any) {
             const errorMessage = error?.message || String(error);
             console.error('Pull ladder error:', error);
             vscode.window.showErrorMessage(`Failed to pull ladder: ${errorMessage}`);
+        }
+    });
+
+    const pullA2OJLadderCommand = vscode.commands.registerCommand('codeforces.pullA2OJLadder', async () => {
+        try {
+            const ladders = await ladderLoader.getAvailableLadders();
+            await showProblemSelection(ladders, 'a2oj');
+        } catch (error: any) {
+            const errorMessage = error?.message || String(error);
+            console.error('Pull A2OJ ladder error:', error);
+            vscode.window.showErrorMessage(`Failed to pull A2OJ ladder: ${errorMessage}`);
+        }
+    });
+
+    const pullNeetCodeCommand = vscode.commands.registerCommand('codeforces.pullNeetCode', async () => {
+        try {
+            const ladders = await ladderLoader.getAvailableLadders();
+            await showProblemSelection(ladders, 'neetcode');
+        } catch (error: any) {
+            const errorMessage = error?.message || String(error);
+            console.error('Pull NeetCode error:', error);
+            vscode.window.showErrorMessage(`Failed to pull NeetCode problems: ${errorMessage}`);
+        }
+    });
+
+    const pullLoveBabbarCommand = vscode.commands.registerCommand('codeforces.pullLoveBabbar', async () => {
+        try {
+            const ladders = await ladderLoader.getAvailableLadders();
+            await showProblemSelection(ladders, 'lovebabbar');
+        } catch (error: any) {
+            const errorMessage = error?.message || String(error);
+            console.error('Pull Love Babbar error:', error);
+            vscode.window.showErrorMessage(`Failed to pull Love Babbar problems: ${errorMessage}`);
+        }
+    });
+
+    const pullStriversCommand = vscode.commands.registerCommand('codeforces.pullStrivers', async () => {
+        try {
+            const ladders = await ladderLoader.getAvailableLadders();
+            await showProblemSelection(ladders, 'strivers');
+        } catch (error: any) {
+            const errorMessage = error?.message || String(error);
+            console.error('Pull Striver\'s error:', error);
+            vscode.window.showErrorMessage(`Failed to pull Striver's problems: ${errorMessage}`);
         }
     });
 
@@ -511,6 +563,10 @@ export function activate(context: vscode.ExtensionContext) {
         clearChatCommand,
         showChatHistoryCommand,
         pullLadderCommand,
+        pullA2OJLadderCommand,
+        pullNeetCodeCommand,
+        pullLoveBabbarCommand,
+        pullStriversCommand,
         refreshSolvedProblemsCommand,
         showSolvedProblemsCommand
     );
