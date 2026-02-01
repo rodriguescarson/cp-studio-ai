@@ -145,7 +145,7 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
         `;
     }
 
-    private getSolvedProblemsContent(problems: string[], cacheInfo: { lastRefresh: number; count: number } | null): string {
+    private getSolvedProblemsContent(problems: string[], cacheInfo: { lastRefresh: number | null; count: number } | null): string {
         // Sort problems by contest ID
         const sortedProblems = problems.sort((a, b) => {
             // Extract contest ID (numbers before the letter)
@@ -156,7 +156,7 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
             return aId - bId;
         });
 
-        const lastRefresh = cacheInfo 
+        const lastRefresh = cacheInfo && cacheInfo.lastRefresh !== null
             ? new Date(cacheInfo.lastRefresh).toLocaleString()
             : 'Never';
 

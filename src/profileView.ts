@@ -205,12 +205,12 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
         return '#FF0000'; // Red (Legendary Grandmaster)
     }
 
-    private getProfileContent(user: any, ratingHistory: any[], recentSubmissions: any[], solvedCount: number = 0): string {
+    private getProfileContent(user: any, ratingHistory: any[], recentSubmissions: any[], totalSolvedCount: number = 0): string {
         const rating = user.rating || 0;
         const rank = user.rank || 'unrated';
         const maxRating = user.maxRating || 0;
         const maxRank = user.maxRank || 'unrated';
-        const solvedCount = recentSubmissions.filter(s => s.verdict === 'OK').length;
+        const recentSolvedCount = recentSubmissions.filter(s => s.verdict === 'OK').length;
         const avatarUrl = user.avatar || '';
         const titlePhotoUrl = user.titlePhoto || '';
         const ratingColor = this.getRatingColor(rating);
@@ -251,13 +251,13 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Recent Solved:</span>
-                        <span class="stat-value">${recentSubmissions.filter(s => s.verdict === 'OK').length}</span>
+                        <span class="stat-value">${recentSolvedCount}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Total Solved:</span>
-                        <span class="stat-value">${solvedCount}</span>
+                        <span class="stat-value">${totalSolvedCount}</span>
                     </div>
-                    ${solvedCount > 0 ? `
+                    ${totalSolvedCount > 0 ? `
                     <div class="stat-item" style="margin-top: 10px;">
                         <button class="action-btn" onclick="showSolvedProblems()" style="width: 100%;">View All Solved Problems</button>
                     </div>

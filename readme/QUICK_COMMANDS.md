@@ -44,13 +44,13 @@ After packaging, install the `.vsix` file:
 1. Open Cursor
 2. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 3. Type: `Extensions: Install from VSIX...`
-4. Select: `/Users/carson/cf/vscode-extension/codeforces-contest-helper-1.0.0.vsix`
+4. Select: `/Users/carson/cf/vscode-extension/codeforces-contest-helper-1.0.1.vsix`
 
 ## File Locations
 
 - **Extension source**: `/Users/carson/cf/vscode-extension/`
 - **Compiled output**: `/Users/carson/cf/vscode-extension/out/`
-- **Packaged file**: `/Users/carson/cf/vscode-extension/codeforces-contest-helper-1.0.0.vsix`
+- **Packaged file**: `/Users/carson/cf/vscode-extension/codeforces-contest-helper-1.0.1.vsix`
 
 ## Troubleshooting
 

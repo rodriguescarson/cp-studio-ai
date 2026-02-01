@@ -14,6 +14,7 @@ import { ProblemStatementFetcher } from './problemStatementFetcher';
 import { LadderLoader } from './ladderLoader';
 import { SolvedProblemsTracker } from './solvedTracker';
 import { SolvedProblemsViewProvider } from './solvedProblemsView';
+import { ProblemFileDecorationProvider } from './fileDecorationProvider';
 
 let contestSetup: ContestSetup;
 let testRunner: TestRunner;
@@ -26,6 +27,7 @@ let extensionContext: vscode.ExtensionContext;
 let ladderLoader: LadderLoader;
 let solvedTracker: SolvedProblemsTracker;
 let solvedProblemsViewProvider: SolvedProblemsViewProvider;
+let fileDecorationProvider: ProblemFileDecorationProvider;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('cfx - codeforce studio extension is now active!');
@@ -67,15 +69,16 @@ export function activate(context: vscode.ExtensionContext) {
         );
         context.subscriptions.push(profileProviderRegistration);
 
-        // Initialize contests provider
-        contestsProvider = new ContestsProvider();
-        context.subscriptions.push(
-            vscode.window.registerTreeDataProvider('cfStudioContests', contestsProvider)
-        );
-
         // Initialize ladder loader and solved tracker
         ladderLoader = new LadderLoader(context);
         solvedTracker = new SolvedProblemsTracker(context);
+
+        // Initialize contests provider (with solved tracker)
+        contestsProvider = new ContestsProvider(context);
+        contestsProvider.setSolvedTracker(solvedTracker);
+        context.subscriptions.push(
+            vscode.window.registerTreeDataProvider('cfStudioContests', contestsProvider)
+        );
 
         // Initialize solved problems view provider
         solvedProblemsViewProvider = new SolvedProblemsViewProvider(context);
@@ -89,6 +92,11 @@ export function activate(context: vscode.ExtensionContext) {
             }
         );
         context.subscriptions.push(solvedProblemsProviderRegistration);
+
+        // Initialize file decoration provider for solved problems
+        fileDecorationProvider = new ProblemFileDecorationProvider(solvedTracker);
+        const fileDecorationProviderRegistration = vscode.window.registerFileDecorationProvider(fileDecorationProvider);
+        context.subscriptions.push(fileDecorationProviderRegistration);
 
         // Update chat view when active editor changes
         // Note: File change handler is registered below after chatViewProvider is created
@@ -317,19 +325,40 @@ export function activate(context: vscode.ExtensionContext) {
             const ladders = await ladderLoader.getAvailableLadders();
             
             if (ladders.length === 0) {
-                vscode.window.showErrorMessage('No ladders with Codeforces problems found');
+                vscode.window.showErrorMessage('No ladders or problem sets found');
                 return;
             }
 
             // Show quick pick to select ladder
-            const items = ladders.map(ladder => ({
-                label: ladder.name.replace('.html', ''),
-                description: `${ladder.codeforcesCount} Codeforces problems`,
-                detail: ladder.totalCount > ladder.codeforcesCount 
-                    ? `Total: ${ladder.totalCount} problems (${ladder.totalCount - ladder.codeforcesCount} non-Codeforces)`
-                    : undefined,
-                ladderName: ladder.name
-            }));
+            const items = ladders.map(ladder => {
+                let description = '';
+                let detail = '';
+                
+                if (ladder.source === 'neetcode') {
+                    description = `${ladder.totalCount} LeetCode problems`;
+                    detail = 'NeetCode 150 - LeetCode problems (view only)';
+                } else if (ladder.source === 'lovebabbar') {
+                    description = `${ladder.totalCount} problems`;
+                    detail = 'Love Babbar 450 DSA Sheet - GeeksforGeeks & LeetCode (view only)';
+                } else if (ladder.source === 'strivers') {
+                    description = `${ladder.totalCount} problems`;
+                    detail = "Striver's Sheet - LeetCode problems (view only)";
+                } else {
+                    // A2OJ ladders
+                    description = `${ladder.codeforcesCount} Codeforces problems`;
+                    detail = ladder.totalCount > ladder.codeforcesCount 
+                        ? `Total: ${ladder.totalCount} problems (${ladder.totalCount - ladder.codeforcesCount} non-Codeforces)`
+                        : 'A2OJ Ladder - Codeforces problems';
+                }
+                
+                return {
+                    label: ladder.name.replace('.html', ''),
+                    description: description,
+                    detail: detail,
+                    ladderName: ladder.name,
+                    source: ladder.source
+                };
+            });
 
             const selected = await vscode.window.showQuickPick(items, {
                 placeHolder: 'Select a ladder to pull problems from',
@@ -344,10 +373,32 @@ export function activate(context: vscode.ExtensionContext) {
             const problems = await ladderLoader.getLadderProblems(selected.ladderName);
             
             if (problems.length === 0) {
-                vscode.window.showWarningMessage(`No Codeforces problems found in ${selected.label}`);
+                vscode.window.showWarningMessage(`No problems found in ${selected.label}`);
                 return;
             }
 
+            // Handle NeetCode, Love Babbar, and Striver's problems differently (they're LeetCode/GeeksforGeeks)
+            if (selected.source === 'neetcode' || selected.source === 'lovebabbar' || selected.source === 'strivers') {
+                // For LeetCode problems, show them in a list and allow opening links
+                const problemItems = problems.map(p => ({
+                    label: p.name || p.url,
+                    description: p.difficulty ? `${p.difficulty} • ${p.pattern || ''}` : '',
+                    detail: p.url,
+                    url: p.url
+                }));
+
+                const chosen = await vscode.window.showQuickPick(problemItems, {
+                    placeHolder: `Select a problem from ${selected.label} (${problems.length} problems)`,
+                    canPickMany: false
+                });
+
+                if (chosen) {
+                    await vscode.env.openExternal(vscode.Uri.parse(chosen.url));
+                }
+                return;
+            }
+
+            // For Codeforces problems, proceed with setup
             // Confirm before proceeding
             const confirm = await vscode.window.showInformationMessage(
                 `Pull ${problems.length} problems from ${selected.label}?`,
@@ -374,6 +425,10 @@ export function activate(context: vscode.ExtensionContext) {
                     }
 
                     const problem = problems[i];
+                    if (!problem.contestId || !problem.problemIndex) {
+                        continue; // Skip non-Codeforces problems
+                    }
+
                     progress.report({
                         increment: 100 / problems.length,
                         message: `Setting up problem ${i + 1}/${problems.length}: ${problem.contestId}${problem.problemIndex}`
@@ -418,6 +473,11 @@ export function activate(context: vscode.ExtensionContext) {
                 // Refresh the view if it exists
                 if (solvedProblemsViewProvider) {
                     solvedProblemsViewProvider.refresh();
+                }
+                
+                // Refresh file decorations
+                if (fileDecorationProvider) {
+                    await fileDecorationProvider.refreshSolvedProblems();
                 }
                 
                 vscode.window.showInformationMessage(

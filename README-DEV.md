@@ -15,7 +15,7 @@ All packaged VSIX files go to the **`builds/`** folder.
 npm run package
 ```
 
-This runs `vsce package --out builds`, producing e.g. `builds/cf-studio-1.0.0.vsix`.
+This runs `vsce package --out builds`, producing e.g. `builds/cf-studio-1.0.1.vsix`.
 
 To package manually with a custom path:
 

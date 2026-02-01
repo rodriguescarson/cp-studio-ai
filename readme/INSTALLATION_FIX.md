@@ -23,7 +23,7 @@ If you're getting `command 'codeforces.setupFromUrl' not found`, follow these st
 2. Install the new `.vsix`:
    - Press `Cmd+Shift+P` / `Ctrl+Shift+P`
    - Type: `Extensions: Install from VSIX...`
-   - Select: `codeforces-contest-helper-1.0.0.vsix`
+   - Select: `codeforces-contest-helper-1.0.1.vsix`
 
 3. **Reload Cursor** after installation
 

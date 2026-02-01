@@ -1,17 +1,26 @@
 import * as vscode from 'vscode';
 import { CodeforcesAPI } from './codeforcesApi';
+import { SolvedProblemsTracker } from './solvedTracker';
 
 export class ContestsProvider implements vscode.TreeDataProvider<ContestTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContestTreeItem | undefined | null | void> = new vscode.EventEmitter<ContestTreeItem | undefined | null | void>();
     readonly onDidChangeTreeData: vscode.Event<ContestTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
     
     private api: CodeforcesAPI;
+    private solvedTracker: SolvedProblemsTracker | null = null;
     private contests: any[] = [];
     private isLoading = false;
 
-    constructor() {
+    constructor(context?: vscode.ExtensionContext) {
         this.api = new CodeforcesAPI();
+        if (context) {
+            this.solvedTracker = new SolvedProblemsTracker(context);
+        }
         this.refresh();
+    }
+
+    setSolvedTracker(tracker: SolvedProblemsTracker): void {
+        this.solvedTracker = tracker;
     }
 
     refresh(): void {
@@ -124,12 +133,16 @@ export class ContestTreeItem extends vscode.TreeItem {
         public readonly description: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly icon: string,
-        public readonly contestId?: number
+        public readonly contestId?: number,
+        public readonly isSolved?: boolean
     ) {
         super(label, collapsibleState);
-        this.tooltip = `${label}\n${description}`;
+        this.tooltip = `${label}\n${description}${isSolved ? '\n✓ Solved' : ''}`;
         this.description = description;
-        this.iconPath = new vscode.ThemeIcon(icon.replace('$(', '').replace(')', ''));
+        
+        // Use checkmark icon if solved, otherwise use the provided icon
+        const iconName = isSolved ? 'check' : icon.replace('$(', '').replace(')', '');
+        this.iconPath = new vscode.ThemeIcon(iconName);
         this.contextValue = contestId ? 'contest' : 'info';
     }
 }

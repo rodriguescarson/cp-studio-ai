@@ -1,0 +1,410 @@
+[
+    {
+      "topicName": "Arrays Part-I",
+      "position": 1,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Arrays", "Problem": "Set Matrix Zeros", "Done": false, "URL": "https://leetcode.com/problems/set-matrix-zeroes/"},
+        {"Topic": "Arrays", "Problem": "Pascal's Triangle", "Done": false, "URL": "https://leetcode.com/problems/pascals-triangle/"},
+        {"Topic": "Arrays", "Problem": "Next Permutation", "Done": false, "URL": "https://leetcode.com/problems/next-permutation/"},
+        {"Topic": "Arrays", "Problem": "Kadane's Algorithm", "Done": false, "URL": "https://leetcode.com/problems/maximum-subarray/"},
+        {"Topic": "Arrays", "Problem": "Sort an array of 0's,1's and 2's", "Done": false, "URL": "https://leetcode.com/problems/sort-colors/"},
+        {"Topic": "Arrays", "Problem": "Stock Buy and Sell", "Done": false, "URL": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"}
+      ]
+    },
+    {
+      "topicName": "Arrays Part-II",
+      "position": 2,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Arrays", "Problem": "Rotate Matrix", "Done": false, "URL": "https://leetcode.com/problems/rotate-image/"},
+        {"Topic": "Arrays", "Problem": "Merge Overlapping Subintervals", "Done": false, "URL": "https://leetcode.com/problems/merge-intervals/"},
+        {"Topic": "Arrays", "Problem": "Merge two sorted arrays without extra space", "Done": false, "URL": ""},
+        {"Topic": "Arrays", "Problem": "Find the duplicate in an array of N+1 integers", "Done": false, "URL": "https://leetcode.com/problems/find-the-duplicate-number/"},
+        {"Topic": "Arrays", "Problem": "Repeat and Missing Number", "Done": false, "URL": ""},
+        {"Topic": "Arrays", "Problem": "Inversion of Array", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "Arrays Part-III",
+      "position": 3,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Arrays", "Problem": "Search in a 2D matrix", "Done": false, "URL": "https://leetcode.com/problems/search-a-2d-matrix/"},
+        {"Topic": "Arrays", "Problem": "Pow(x,n)", "Done": false, "URL": "https://leetcode.com/problems/powx-n/"},
+        {"Topic": "Arrays", "Problem": "Majority Element (> n/2 times)", "Done": false, "URL": "https://leetcode.com/problems/majority-element/"},
+        {"Topic": "Arrays", "Problem": "Majority Element (n/3 times)", "Done": false, "URL": "https://leetcode.com/problems/majority-element-ii/"},
+        {"Topic": "Arrays", "Problem": "Grid Unique Paths", "Done": false, "URL": "https://leetcode.com/problems/unique-paths/"},
+        {"Topic": "Arrays", "Problem": "Reverse Pairs", "Done": false, "URL": "https://leetcode.com/problems/reverse-pairs/"}
+      ]
+    },
+    {
+      "topicName": "Arrays Part-IV",
+      "position": 4,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Arrays", "Problem": "2Sum Problem", "Done": false, "URL": "https://leetcode.com/problems/two-sum/"},
+        {"Topic": "Arrays", "Problem": "4-Sum Problem", "Done": false, "URL": "https://leetcode.com/problems/4sum/"},
+        {"Topic": "Arrays", "Problem": "Longest Consecutive Sequence", "Done": false, "URL": "https://leetcode.com/problems/longest-consecutive-sequence/"},
+        {"Topic": "Arrays", "Problem": "Largest Subarray with K sum", "Done": false, "URL": ""},
+        {"Topic": "Arrays", "Problem": "Count number of subarrays with given xor K", "Done": false, "URL": ""},
+        {"Topic": "Arrays", "Problem": "Longest Substring without repeat", "Done": false, "URL": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"}
+      ]
+    },
+    {
+      "topicName": "Linked List Part-I",
+      "position": 5,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Linked List", "Problem": "Reverse a LinkedList", "Done": false, "URL": "https://leetcode.com/problems/reverse-linked-list/"},
+        {"Topic": "Linked List", "Problem": "Find the middle of LinkedList", "Done": false, "URL": "https://leetcode.com/problems/middle-of-the-linked-list/"},
+        {"Topic": "Linked List", "Problem": "Merge two sorted Linked List", "Done": false, "URL": "https://leetcode.com/problems/merge-two-sorted-lists/"},
+        {"Topic": "Linked List", "Problem": "Remove N-th node from back of LinkedList", "Done": false, "URL": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/"},
+        {"Topic": "Linked List", "Problem": "Add two numbers as LinkedList", "Done": false, "URL": "https://leetcode.com/problems/add-two-numbers/"},
+        {"Topic": "Linked List", "Problem": "Delete a given Node when a node is given", "Done": false, "URL": "https://leetcode.com/problems/delete-node-in-a-linked-list/"}
+      ]
+    },
+    {
+      "topicName": "Linked List Part-II",
+      "position": 6,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Linked List", "Problem": "Find intersection point of Y LinkedList", "Done": false, "URL": "https://leetcode.com/problems/intersection-of-two-linked-lists/"},
+        {"Topic": "Linked List", "Problem": "Detect a cycle in Linked List", "Done": false, "URL": "https://leetcode.com/problems/linked-list-cycle/"},
+        {"Topic": "Linked List", "Problem": "Reverse a LinkedList in groups of size k", "Done": false, "URL": "https://leetcode.com/problems/reverse-nodes-in-k-group/"},
+        {"Topic": "Linked List", "Problem": "Check if a LinkedList is palindrome", "Done": false, "URL": "https://leetcode.com/problems/palindrome-linked-list/"},
+        {"Topic": "Linked List", "Problem": "Find the starting point of the Loop", "Done": false, "URL": ""},
+        {"Topic": "Linked List", "Problem": "Flattening of a LinkedList", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "Linked List and Arrays",
+      "position": 7,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Linked List & Arrays", "Problem": "Rotate a LinkedList", "Done": false, "URL": ""},
+        {"Topic": "Linked List & Arrays", "Problem": "Clone a Linked List with random pointer", "Done": false, "URL": "https://leetcode.com/problems/copy-list-with-random-pointer/"},
+        {"Topic": "Linked List & Arrays", "Problem": "3 sum", "Done": false, "URL": "https://leetcode.com/problems/3sum/"},
+        {"Topic": "Linked List & Arrays", "Problem": "Trapping Rainwater", "Done": false, "URL": "https://leetcode.com/problems/trapping-rain-water/"},
+        {"Topic": "Linked List & Arrays", "Problem": "Remove Duplicate from Sorted array", "Done": false, "URL": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/"},
+        {"Topic": "Linked List & Arrays", "Problem": "Max consecutive ones", "Done": false, "URL": "https://leetcode.com/problems/max-consecutive-ones/"}
+      ]
+    },
+    {
+      "topicName": "Greedy Algorithm",
+      "position": 8,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Greedy", "Problem": "N meetings in one room", "Done": false, "URL": ""},
+        {"Topic": "Greedy", "Problem": "Minimum number of platforms", "Done": false, "URL": ""},
+        {"Topic": "Greedy", "Problem": "Job sequencing Problem", "Done": false, "URL": ""},
+        {"Topic": "Greedy", "Problem": "Fractional Knapsack Problem", "Done": false, "URL": ""},
+        {"Topic": "Greedy", "Problem": "Greedy algorithm minimum coins", "Done": false, "URL": ""},
+        {"Topic": "Greedy", "Problem": "Assign Cookies", "Done": false, "URL": "https://leetcode.com/problems/assign-cookies/"}
+      ]
+    },
+    {
+      "topicName": "Recursion",
+      "position": 9,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Recursion", "Problem": "Subset Sums", "Done": false, "URL": ""},
+        {"Topic": "Recursion", "Problem": "Subset-II", "Done": false, "URL": ""},
+        {"Topic": "Recursion", "Problem": "Combination sum-1", "Done": false, "URL": "https://leetcode.com/problems/combination-sum/"},
+        {"Topic": "Recursion", "Problem": "Combination sum-2", "Done": false, "URL": "https://leetcode.com/problems/combination-sum-ii/"},
+        {"Topic": "Recursion", "Problem": "Palindrome Partitioning", "Done": false, "URL": "https://leetcode.com/problems/palindrome-partitioning/"},
+        {"Topic": "Recursion", "Problem": "K-th permutation Sequence", "Done": false, "URL": "https://leetcode.com/problems/permutation-sequence/"}
+      ]
+    },
+    {
+      "topicName": "Recursion & Backtracking",
+      "position": 10,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Backtracking", "Problem": "Print all permutations of array", "Done": false, "URL": ""},
+        {"Topic": "Backtracking", "Problem": "N queens Problem", "Done": false, "URL": "https://leetcode.com/problems/n-queens/"},
+        {"Topic": "Backtracking", "Problem": "Sudoku Solver", "Done": false, "URL": "https://leetcode.com/problems/sudoku-solver/"},
+        {"Topic": "Backtracking", "Problem": "M Coloring Problem", "Done": false, "URL": ""},
+        {"Topic": "Backtracking", "Problem": "Rat in a Maze", "Done": false, "URL": ""},
+        {"Topic": "Backtracking", "Problem": "Word Break (print all ways)", "Done": false, "URL": "https://leetcode.com/problems/word-break/"}
+      ]
+    },
+    {
+      "topicName": "Binary Search",
+      "position": 11,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Binary Search", "Problem": "The N-th root of an integer", "Done": false, "URL": ""},
+        {"Topic": "Binary Search", "Problem": "Matrix Median", "Done": false, "URL": ""},
+        {"Topic": "Binary Search", "Problem": "Find single element in sorted array", "Done": false, "URL": "https://leetcode.com/problems/single-element-in-a-sorted-array/"},
+        {"Topic": "Binary Search", "Problem": "Search in rotated sorted array", "Done": false, "URL": "https://leetcode.com/problems/search-in-rotated-sorted-array/"},
+        {"Topic": "Binary Search", "Problem": "Median of 2 sorted arrays", "Done": false, "URL": "https://leetcode.com/problems/median-of-two-sorted-arrays/"},
+        {"Topic": "Binary Search", "Problem": "K-th element of two sorted arrays", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "Binary Search (Continued)",
+      "position": 12,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Binary Search", "Problem": "Allocate Minimum Number of Pages", "Done": false, "URL": ""},
+        {"Topic": "Binary Search", "Problem": "Aggressive Cows", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "Heaps",
+      "position": 13,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Heaps", "Problem": "Max heap/min heap Implementation", "Done": false, "URL": ""},
+        {"Topic": "Heaps", "Problem": "Kth Largest Element", "Done": false, "URL": "https://leetcode.com/problems/kth-largest-element-in-an-array/"},
+        {"Topic": "Heaps", "Problem": "Maximum Sum Combination", "Done": false, "URL": ""},
+        {"Topic": "Heaps", "Problem": "Find Median from Data Stream", "Done": false, "URL": "https://leetcode.com/problems/find-median-from-data-stream/"},
+        {"Topic": "Heaps", "Problem": "Merge K sorted arrays", "Done": false, "URL": "https://leetcode.com/problems/merge-k-sorted-lists/"},
+        {"Topic": "Heaps", "Problem": "K most frequent elements", "Done": false, "URL": "https://leetcode.com/problems/top-k-frequent-elements/"}
+      ]
+    },
+    {
+      "topicName": "Stack & Queue Part-I",
+      "position": 14,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Stack & Queue", "Problem": "Implement Stack using Arrays", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "Implement Queue using Arrays", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "Implement Stack using Queue", "Done": false, "URL": "https://leetcode.com/problems/implement-stack-using-queues/"},
+        {"Topic": "Stack & Queue", "Problem": "Implement Queue using Stack", "Done": false, "URL": "https://leetcode.com/problems/implement-queue-using-stacks/"},
+        {"Topic": "Stack & Queue", "Problem": "Check Balanced Parentheses", "Done": false, "URL": "https://leetcode.com/problems/valid-parentheses/"},
+        {"Topic": "Stack & Queue", "Problem": "Next Greater Element", "Done": false, "URL": "https://leetcode.com/problems/next-greater-element-i/"}
+      ]
+    },
+    {
+      "topicName": "Stack & Queue Part-II",
+      "position": 15,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Stack & Queue", "Problem": "Next Smaller Element", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "LRU Cache", "Done": false, "URL": "https://leetcode.com/problems/lru-cache/"},
+        {"Topic": "Stack & Queue", "Problem": "LFU Cache", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "Largest rectangle in histogram", "Done": false, "URL": "https://leetcode.com/problems/largest-rectangle-in-histogram/"},
+        {"Topic": "Stack & Queue", "Problem": "Sliding Window maximum", "Done": false, "URL": "https://leetcode.com/problems/sliding-window-maximum/"},
+        {"Topic": "Stack & Queue", "Problem": "Rotten Orange (BFS)", "Done": false, "URL": "https://leetcode.com/problems/rotting-oranges/"}
+      ]
+    },
+    {
+      "topicName": "Stack & Queue Part-II Continued",
+      "position": 16,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Stack & Queue", "Problem": "Stock span problem", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "Find max of mins of every window size", "Done": false, "URL": ""},
+        {"Topic": "Stack & Queue", "Problem": "Celebrity Problem", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "String Part-I",
+      "position": 17,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "String", "Problem": "Reverse Words in a String", "Done": false, "URL": "https://leetcode.com/problems/reverse-words-in-a-string/"},
+        {"Topic": "String", "Problem": "Longest Palindrome in a string", "Done": false, "URL": "https://leetcode.com/problems/longest-palindromic-substring/"},
+        {"Topic": "String", "Problem": "Roman Number to Integer", "Done": false, "URL": "https://leetcode.com/problems/roman-to-integer/"},
+        {"Topic": "String", "Problem": "Implement ATOI/STRSTR", "Done": false, "URL": ""},
+        {"Topic": "String", "Problem": "Longest Common Prefix", "Done": false, "URL": "https://leetcode.com/problems/longest-common-prefix/"},
+        {"Topic": "String", "Problem": "Rabin Karp", "Done": false, "URL": ""}
+      ]
+    },
+    {
+      "topicName": "String Part-II",
+      "position": 18,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "String", "Problem": "Z-Function", "Done": false, "URL": ""},
+        {"Topic": "String", "Problem": "KMP / LPS array", "Done": false, "URL": ""},
+        {"Topic": "String", "Problem": "Minimum chars to insert to make palindrome", "Done": false, "URL": ""},
+        {"Topic": "String", "Problem": "Check for Anagrams", "Done": false, "URL": "https://leetcode.com/problems/valid-anagram/"},
+        {"Topic": "String", "Problem": "Count and say", "Done": false, "URL": "https://leetcode.com/problems/count-and-say/"},
+        {"Topic": "String", "Problem": "Compare version numbers", "Done": false, "URL": "https://leetcode.com/problems/compare-version-numbers/"}
+      ]
+    },
+    {
+      "topicName": "Binary Tree Part-I",
+      "position": 19,
+      "started": false,
+      "doneQuestions": 0,
+      "questions": [
+        {"Topic": "Binary Tree", "Problem": "Inorder Traversal", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-inorder-traversal/"},
+        {"Topic": "Binary Tree", "Problem": "Preorder Traversal", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-preorder-traversal/"},
+        {"Topic": "Binary Tree", "Problem": "Postorder Traversal", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-postorder-traversal/"},
+        {"Topic": "Binary Tree", "Problem": "Morris Inorder Traversal", "Done": false, "URL": ""},
+        {"Topic": "Binary Tree", "Problem": "Morris Preorder Traversal", "Done": false, "URL": ""},
+        {"Topic": "Binary Tree", "Problem": "Left View of Binary Tree", "Done": false, "URL": ""}
+      ]
+    },
+        {
+          "topicName": "Binary Tree Part-I",
+          "position": 20,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Binary Tree", "Problem": "Level order Traversal / Spiral", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-level-order-traversal/"},
+            {"Topic": "Binary Tree", "Problem": "Height of Binary Tree", "Done": false, "URL": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Diameter of Binary Tree", "Done": false, "URL": "https://leetcode.com/problems/diameter-of-binary-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Check if Balanced Binary Tree", "Done": false, "URL": "https://leetcode.com/problems/balanced-binary-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Lowest Common Ancestor", "Done": false, "URL": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Check if two trees are identical", "Done": false, "URL": "https://leetcode.com/problems/same-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Zig Zag Traversal", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/"},
+            {"Topic": "Binary Tree", "Problem": "Boundary Traversal", "Done": false, "URL": ""}
+          ]
+        },
+        {
+          "topicName": "Binary Tree Part-II",
+          "position": 21,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Binary Tree", "Problem": "Maximum Path Sum", "Done": false, "URL": "https://leetcode.com/problems/binary-tree-maximum-path-sum/"},
+            {"Topic": "Binary Tree", "Problem": "Construct Binary Tree from Inorder & Preorder", "Done": false, "URL": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/"},
+            {"Topic": "Binary Tree", "Problem": "Construct Binary Tree from Inorder & Postorder", "Done": false, "URL": "https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/"},
+            {"Topic": "Binary Tree", "Problem": "Symmetric Binary Tree", "Done": false, "URL": "https://leetcode.com/problems/symmetric-tree/"},
+            {"Topic": "Binary Tree", "Problem": "Flatten Binary Tree to LinkedList", "Done": false, "URL": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/"},
+            {"Topic": "Binary Tree", "Problem": "Children Sum Property", "Done": false, "URL": ""}
+          ]
+        },
+        {
+          "topicName": "Binary Search Tree Part-I",
+          "position": 22,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "BST", "Problem": "Search given Key in BST", "Done": false, "URL": "https://leetcode.com/problems/search-in-a-binary-search-tree/"},
+            {"Topic": "BST", "Problem": "Construct BST from Keys", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "Construct BST from Preorder", "Done": false, "URL": "https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/"},
+            {"Topic": "BST", "Problem": "Check if BT is BST", "Done": false, "URL": "https://leetcode.com/problems/validate-binary-search-tree/"},
+            {"Topic": "BST", "Problem": "Find LCA in BST", "Done": false, "URL": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"},
+            {"Topic": "BST", "Problem": "Populate Next Right Pointers", "Done": false, "URL": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node/"}
+          ]
+        },
+        {
+          "topicName": "Binary Search Tree Part-II",
+          "position": 23,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "BST", "Problem": "Floor in a BST", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "Ceil in a BST", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "Find K-th smallest in BST", "Done": false, "URL": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/"},
+            {"Topic": "BST", "Problem": "Find K-th largest in BST", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "Find pair with given sum", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "BST Iterator", "Done": false, "URL": "https://leetcode.com/problems/binary-search-tree-iterator/"},
+            {"Topic": "BST", "Problem": "Size of largest BST in Binary Tree", "Done": false, "URL": ""},
+            {"Topic": "BST", "Problem": "Serialize and Deserialize BST", "Done": false, "URL": "https://leetcode.com/problems/serialize-and-deserialize-bst/"}
+          ]
+        },
+        {
+          "topicName": "Binary Trees Miscellaneous",
+          "position": 24,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Binary Tree Misc", "Problem": "Binary Tree to Double Linked List", "Done": false, "URL": ""},  
+            {"Topic": "Binary Tree Misc", "Problem": "Find median in stream", "Done": false, "URL": "https://leetcode.com/problems/find-median-from-data-stream/"},
+            {"Topic": "Binary Tree Misc", "Problem": "K-th largest in stream", "Done": false, "URL": ""},
+            {"Topic": "Binary Tree Misc", "Problem": "Distinct numbers in window", "Done": false, "URL": ""},
+            {"Topic": "Binary Tree Misc", "Problem": "K-th largest in unsorted array", "Done": false, "URL": "https://leetcode.com/problems/kth-largest-element-in-an-array/"},
+            {"Topic": "Binary Tree Misc", "Problem": "Flood-fill Algorithm", "Done": false, "URL": "https://leetcode.com/problems/flood-fill/"}
+          ]
+        },
+        {
+          "topicName": "Graph Part-I",
+          "position": 25,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Graph", "Problem": "Clone a graph", "Done": false, "URL": "https://leetcode.com/problems/clone-graph/"},
+            {"Topic": "Graph", "Problem": "DFS", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "BFS", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Detect cycle in undirected graph (BFS)", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Detect cycle in undirected graph (DFS)", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Detect cycle in directed graph (DFS)", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Number of islands", "Done": false, "URL": "https://leetcode.com/problems/number-of-islands/"}
+          ]
+        },
+        {
+          "topicName": "Graph Part-II",
+          "position": 26,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Graph", "Problem": "Strongly Connected Components", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Dijkstra’s Algorithm", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Bellman-Ford Algorithm", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "Floyd Warshall Algorithm", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "MST Prim’s Algo", "Done": false, "URL": ""},
+            {"Topic": "Graph", "Problem": "MST Kruskal’s Algo", "Done": false, "URL": ""}
+          ]
+        },
+        {
+          "topicName": "Dynamic Programming Part-I",
+          "position": 27,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "DP", "Problem": "Maximum Product Subarray", "Done": false, "URL": "https://leetcode.com/problems/maximum-product-subarray/"},
+            {"Topic": "DP", "Problem": "Longest Increasing Subsequence", "Done": false, "URL": "https://leetcode.com/problems/longest-increasing-subsequence/"},
+            {"Topic": "DP", "Problem": "Longest Common Subsequence", "Done": false, "URL": "https://leetcode.com/problems/longest-common-subsequence/"},
+            {"Topic": "DP", "Problem": "0-1 Knapsack", "Done": false, "URL": ""},
+            {"Topic": "DP", "Problem": "Edit Distance", "Done": false, "URL": "https://leetcode.com/problems/edit-distance/"},
+            {"Topic": "DP", "Problem": "Matrix Chain Multiplication", "Done": false, "URL": ""}
+          ]
+        },
+        {
+          "topicName": "Dynamic Programming Part-II",
+          "position": 28,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "DP", "Problem": "Minimum sum path in matrix", "Done": false, "URL": ""},
+            {"Topic": "DP", "Problem": "Coin change", "Done": false, "URL": "https://leetcode.com/problems/coin-change/"},
+            {"Topic": "DP", "Problem": "Subset Sum", "Done": false, "URL": "https://leetcode.com/problems/subsets/"},
+            {"Topic": "DP", "Problem": "Rod Cutting", "Done": false, "URL": ""},
+            {"Topic": "DP", "Problem": "Egg Dropping", "Done": false, "URL": ""},
+            {"Topic": "DP", "Problem": "Word Break", "Done": false, "URL": "https://leetcode.com/problems/word-break/"},
+            {"Topic": "DP", "Problem": "Maximum profit in Job scheduling", "Done": false, "URL": ""}
+          ]
+        },
+        {
+          "topicName": "Trie",
+          "position": 29,
+          "started": false,
+          "doneQuestions": 0,
+          "questions": [
+            {"Topic": "Trie", "Problem": "Implement Trie", "Done": false, "URL": "https://leetcode.com/problems/implement-trie-prefix-tree/"},
+            {"Topic": "Trie", "Problem": "Implement Trie 2", "Done": false, "URL": ""},
+            {"Topic": "Trie", "Problem": "Longest String with All Prefixes", "Done": false, "URL": ""},
+            {"Topic": "Trie", "Problem": "Number of Distinct Substrings", "Done": false, "URL": ""},
+            {"Topic": "Trie", "Problem": "Power Set", "Done": false, "URL": ""},
+            {"Topic": "Trie", "Problem": "Maximum XOR of two numbers in array", "Done": false, "URL": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/"},
+            {"Topic": "Trie", "Problem": "Maximum XOR With an Element From Array", "Done": false, "URL": "https://leetcode.com/problems/maximum-xor-with-an-element-from-array/"}
+          ]
+        }
+            
+  ]
+  
