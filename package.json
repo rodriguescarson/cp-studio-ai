@@ -2,7 +2,7 @@
   "name": "cf-studio",
   "displayName": "cfx - codeforce studio",
   "description": "Professional Codeforces contest workspace for VS Code & Cursor. Setup contests instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
