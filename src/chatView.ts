@@ -35,6 +35,10 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this.getWebviewContent();
 
+        // Register with view manager for single-tab behavior
+        const { registerViewForCollapse } = require('./viewManager');
+        registerViewForCollapse(ChatViewProvider.viewType, webviewView);
+
         // Handle messages from webview
         webviewView.webview.onDidReceiveMessage(
             async (message) => {
@@ -138,7 +142,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
             
             // Show info message - user can click the sidebar icon manually
             vscode.window.showInformationMessage(
-                'Please click the "cfx - codeforce studio" icon in the sidebar to open the chat view.'
+                'Please click the "CP Studio" icon in the sidebar to open the chat view.'
             );
         } catch (error: any) {
             console.error('Error showing chat view:', error);
@@ -486,7 +490,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         
         const chatTitle = this._session?.contestId && this._session?.problemIndex
             ? `Contest ${this._session.contestId} - Problem ${this._session.problemIndex}`
-            : this._session?.title || 'cfx - codeforce studio Chat';
+            : this._session?.title || 'CP Studio Chat';
 
         const hasContestFile = context.filePath && context.filePath.includes('contests') && context.filePath.endsWith('main.cpp');
         const welcomeMessage = hasContestFile && this._session?.contestId && this._session?.problemIndex
@@ -535,7 +539,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cfx - codeforce studio Chat</title>
+    <title>CP Studio Chat</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons@0.0.1/dist/codicon.css">
     <style>
         :root {
@@ -1396,7 +1400,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     
     <!-- Row 1: only contest title -->
     <div class="chat-header">
-        <div class="chat-title" id="chatTitle">cfx - codeforce studio Chat</div>
+        <div class="chat-title" id="chatTitle">CP Studio Chat</div>
     </div>
     <!-- Row 2: all actions (kept separate from title; also in panel bar when visible) -->
     <div class="chat-toolbar">
@@ -1421,7 +1425,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     <div class="messages-container" id="messagesContainer">
         <div class="message assistant">
             <div class="message-content">
-                Welcome to cfx - codeforce studio Chat! I can help you with:
+                Welcome to CP Studio Chat! I can help you with:
                 <ul style="margin-top: 12px; margin-left: 20px; line-height: 1.8;">
                     <li>Code analysis and review</li>
                     <li>Complexity analysis</li>
@@ -1856,7 +1860,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
                         welcomeDiv.className = 'message assistant';
                         const welcomeHtml = (message.welcomeMessage && typeof message.welcomeMessage === 'string')
                             ? message.welcomeMessage
-                            : 'Welcome to cfx - codeforce studio Chat! I can help you with: ' +
+                            : 'Welcome to CP Studio Chat! I can help you with: ' +
                               '<ul style="margin-top: 12px; margin-left: 20px; line-height: 1.8;">' +
                               '<li>Code analysis and review</li><li>Complexity analysis</li>' +
                               '<li>Optimization suggestions</li><li>Debugging help</li></ul>';

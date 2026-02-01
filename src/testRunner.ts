@@ -12,7 +12,7 @@ export class TestRunner {
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.outputChannel = vscode.window.createOutputChannel('cfx - codeforce studio - Tests');
+        this.outputChannel = vscode.window.createOutputChannel('CP Studio - Tests');
     }
 
     async runTests(filePath: string): Promise<void> {

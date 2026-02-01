@@ -37,6 +37,10 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this.getWebviewContent();
 
+        // Register with view manager for single-tab behavior
+        const { registerViewForCollapse } = require('./viewManager');
+        registerViewForCollapse(ProfileViewProvider.viewType, webviewView);
+
         // Handle messages from webview
         webviewView.webview.onDidReceiveMessage(
             async (message) => {

@@ -15,6 +15,7 @@ import { LadderLoader } from './ladderLoader';
 import { SolvedProblemsTracker } from './solvedTracker';
 import { SolvedProblemsViewProvider } from './solvedProblemsView';
 import { ProblemFileDecorationProvider } from './fileDecorationProvider';
+import { registerViewForCollapse } from './viewManager';
 
 let contestSetup: ContestSetup;
 let testRunner: TestRunner;
@@ -29,8 +30,9 @@ let solvedTracker: SolvedProblemsTracker;
 let solvedProblemsViewProvider: SolvedProblemsViewProvider;
 let fileDecorationProvider: ProblemFileDecorationProvider;
 
+
 export function activate(context: vscode.ExtensionContext) {
-    console.log('cfx - codeforce studio extension is now active!');
+    console.log('CP Studio extension is now active!');
     extensionContext = context;
 
     try {
@@ -76,9 +78,8 @@ export function activate(context: vscode.ExtensionContext) {
         // Initialize contests provider (with solved tracker)
         contestsProvider = new ContestsProvider(context);
         contestsProvider.setSolvedTracker(solvedTracker);
-        context.subscriptions.push(
-            vscode.window.registerTreeDataProvider('cfStudioContests', contestsProvider)
-        );
+        const contestsProviderRegistration = vscode.window.registerTreeDataProvider('cfStudioContests', contestsProvider);
+        context.subscriptions.push(contestsProviderRegistration);
 
         // Initialize solved problems view provider
         solvedProblemsViewProvider = new SolvedProblemsViewProvider(context);
@@ -97,6 +98,14 @@ export function activate(context: vscode.ExtensionContext) {
         fileDecorationProvider = new ProblemFileDecorationProvider(solvedTracker);
         const fileDecorationProviderRegistration = vscode.window.registerFileDecorationProvider(fileDecorationProvider);
         context.subscriptions.push(fileDecorationProviderRegistration);
+
+        // Initialize view manager context variables
+        // Set initial context - all views start as not explicitly visible
+        // The first view that becomes visible will be tracked
+        await vscode.commands.executeCommand('setContext', 'cfStudio.contests.visible', false);
+        await vscode.commands.executeCommand('setContext', 'cfStudio.chat.visible', false);
+        await vscode.commands.executeCommand('setContext', 'cfStudio.profile.visible', false);
+        await vscode.commands.executeCommand('setContext', 'cfStudio.solved.visible', false);
 
         // Update chat view when active editor changes
         // Note: File change handler is registered below after chatViewProvider is created
@@ -130,7 +139,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(`Setup failed: ${errorMessage}`);
             
             // Show output channel for detailed error
-            const outputChannel = vscode.window.createOutputChannel('cfx - codeforce studio');
+            const outputChannel = vscode.window.createOutputChannel('CP Studio');
             outputChannel.appendLine(`Error in setupFromUrl: ${errorMessage}`);
             outputChannel.appendLine(`Stack: ${error?.stack || 'No stack trace'}`);
             outputChannel.show();
@@ -561,7 +570,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     // Show welcome message
-    vscode.window.showInformationMessage('cfx - codeforce studio is ready! Use the command palette to get started.');
+    vscode.window.showInformationMessage('CP Studio is ready! Use the command palette to get started.');
 }
 
 export function deactivate() {}

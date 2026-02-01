@@ -179,7 +179,7 @@ export class ContestSetup {
                 vscode.window.showErrorMessage(`Setup failed: ${errorMessage}`);
                 
                 // Show detailed error in output
-                const outputChannel = vscode.window.createOutputChannel('cfx - codeforce studio');
+                const outputChannel = vscode.window.createOutputChannel('CP Studio');
                 outputChannel.appendLine(`Error in setupFromUrl:`);
                 outputChannel.appendLine(`Message: ${errorMessage}`);
                 outputChannel.appendLine(`Stack: ${errorStack}`);

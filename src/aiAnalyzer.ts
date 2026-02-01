@@ -11,7 +11,7 @@ export class AIAnalyzer {
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.outputChannel = vscode.window.createOutputChannel('cfx - codeforce studio - AI Analysis');
+        this.outputChannel = vscode.window.createOutputChannel('CP Studio - AI Analysis');
     }
 
     async sendChatMessage(userMessage: string, filePath?: string, chatHistory: ChatMessage[] = []): Promise<string> {
@@ -384,7 +384,7 @@ Be concise but thorough.`;
                     // OpenRouter specific headers
                     if (provider === 'openrouter') {
                         headers['HTTP-Referer'] = 'https://github.com/rodriguescarson/cf-studio';
-                        headers['X-Title'] = 'cfx - codeforce studio';
+                        headers['X-Title'] = 'CP Studio';
                     }
                     
                     const response_data = await axios.post(

@@ -1,7 +1,7 @@
 {
   "name": "cf-studio",
-  "displayName": "cfx - codeforce studio",
-  "description": "Professional Codeforces contest workspace for VS Code & Cursor. Setup contests instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
+  "displayName": "CP Studio",
+  "description": "The All-in-One Competitive Programming Workspace for VS Code & Cursor. Setup problems from Codeforces, LeetCode, and GeeksforGeeks instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
   "version": "1.0.4",
   "publisher": "rodriguescarson",
   "author": {
@@ -62,115 +62,125 @@
     "commands": [
       {
         "command": "codeforces.setupFromUrl",
-        "title": "cfx: Setup Contest from URL",
+        "title": "CP Studio: Setup Problem from URL",
         "icon": "$(link)"
       },
       {
         "command": "codeforces.runTests",
-        "title": "cfx: Run Tests",
+        "title": "CP Studio: Run Tests",
         "icon": "$(play)"
       },
       {
         "command": "codeforces.aiAnalysis",
-        "title": "cfx: Open Chat",
+        "title": "CP Studio: AI Analysis",
         "icon": "$(sparkle)"
       },
       {
         "command": "codeforces.openChat",
-        "title": "cfx: Open Chat",
+        "title": "CP Studio: Open Chat",
         "icon": "$(comment-discussion)"
       },
       {
         "command": "codeforces.copyCode",
-        "title": "cfx: Copy Code to Clipboard",
+        "title": "CP Studio: Copy Code to Clipboard",
         "icon": "$(copy)"
       },
       {
         "command": "codeforces.newChat",
-        "title": "cfx: New Chat",
+        "title": "CP Studio: New Chat",
         "icon": "$(add)"
       },
       {
         "command": "codeforces.configureApiKey",
-        "title": "cfx: Configure API Key",
+        "title": "CP Studio: Configure API Key",
         "icon": "$(key)"
       },
       {
         "command": "codeforces.insertCode",
-        "title": "cfx: Insert Code from Chat"
+        "title": "CP Studio: Insert Code from Chat"
       },
       {
         "command": "codeforces.setupFromContest",
-        "title": "cfx: Setup Contest",
+        "title": "CP Studio: Setup Contest",
         "icon": "$(calendar)"
       },
       {
         "command": "codeforces.setupProfile",
-        "title": "cfx: Setup Profile",
+        "title": "CP Studio: Setup Profile",
         "icon": "$(account)"
       },
       {
         "command": "codeforces.refreshContests",
-        "title": "cfx: Refresh Contests",
+        "title": "CP Studio: Refresh Contests",
         "icon": "$(refresh)"
       },
       {
         "command": "codeforces.refreshProfile",
-        "title": "cfx: Refresh Profile",
+        "title": "CP Studio: Refresh Profile",
         "icon": "$(refresh)"
       },
       {
         "command": "codeforces.clearChat",
-        "title": "cfx: Clear Chat",
+        "title": "CP Studio: Clear Chat",
         "icon": "$(clear-all)"
       },
       {
         "command": "codeforces.showChatHistory",
-        "title": "cfx: Chat History",
+        "title": "CP Studio: Chat History",
         "icon": "$(history)"
       },
       {
         "command": "codeforces.pullLadder",
-        "title": "cfx: Pull Ladder (All)",
+        "title": "CP Studio: Pull Ladder (All)",
         "icon": "$(download)"
       },
       {
         "command": "codeforces.pullA2OJLadder",
-        "title": "cfx: A2OJ Ladders",
+        "title": "CP Studio: A2OJ Ladders",
         "icon": "$(list-selection)"
       },
       {
         "command": "codeforces.pullNeetCode",
-        "title": "cfx: NeetCode 150",
+        "title": "CP Studio: NeetCode 150",
         "icon": "$(book)"
       },
       {
         "command": "codeforces.pullLoveBabbar",
-        "title": "cfx: Love Babbar 450",
+        "title": "CP Studio: Love Babbar 450",
         "icon": "$(checklist)"
       },
       {
         "command": "codeforces.pullStrivers",
-        "title": "cfx: Striver's Sheet",
+        "title": "CP Studio: Striver's Sheet",
         "icon": "$(star)"
       },
       {
         "command": "codeforces.refreshSolvedProblems",
-        "title": "cfx: Refresh Solved Problems",
+        "title": "CP Studio: Refresh Solved Problems",
         "icon": "$(sync)"
       },
       {
         "command": "codeforces.showSolvedProblems",
-        "title": "cfx: Show Solved Problems",
+        "title": "CP Studio: Show Solved Problems",
         "icon": "$(checklist)"
       }
     ],
     "menus": {
       "editor/title": [
         {
+          "command": "codeforces.runTests",
+          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codeforces.aiAnalysis",
+          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "group": "navigation@2"
+        },
+        {
           "command": "codeforces.copyCode",
-          "when": "resourceLangId == cpp && resourcePath =~ /contests/.*/main\\.cpp$",
-          "group": "navigation"
+          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "group": "navigation@3"
         }
       ],
       "explorer/context": [
@@ -283,7 +293,7 @@
       "activitybar": [
         {
           "id": "cfStudio",
-          "title": "cfx - codeforce studio",
+          "title": "CP Studio",
           "icon": "resources/logo.png"
         }
       ]

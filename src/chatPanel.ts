@@ -73,7 +73,7 @@ export class ChatPanel {
         // Otherwise, create a new panel
         const panel = vscode.window.createWebviewPanel(
             'cfStudioChat',
-            session.title || 'cfx - codeforce studio Chat',
+            session.title || 'CP Studio Chat',
             column || vscode.ViewColumn.One,
             {
                 enableScripts: true,
@@ -206,7 +206,7 @@ export class ChatPanel {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cfx - codeforce studio Chat</title>
+    <title>CP Studio Chat</title>
     <style>
         * {
             margin: 0;
@@ -479,9 +479,9 @@ export class ChatPanel {
 
     <div class="messages-container" id="messagesContainer">
         <div class="message assistant">
-            <div class="message-header">cfx - codeforce studio</div>
+            <div class="message-header">CP Studio</div>
             <div class="message-content">
-                Welcome to cfx - codeforce studio Chat! I can help you with:
+                Welcome to CP Studio Chat! I can help you with:
                 <ul style="margin-top: 8px; margin-left: 20px;">
                     <li>Code analysis and review</li>
                     <li>Complexity analysis</li>
@@ -697,7 +697,7 @@ export class ChatPanel {
                     if (message.filePath) {
                         chatTitle.textContent = message.contestId && message.problemIndex 
                             ? \`Contest \${message.contestId} - Problem \${message.problemIndex}\`
-                            : 'cfx - codeforce studio Chat';
+                            : 'CP Studio Chat';
                     }
                     scrollToBottom();
                     break;

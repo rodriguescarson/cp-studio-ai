@@ -32,6 +32,10 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this.getWebviewContent();
 
+        // Register with view manager for single-tab behavior
+        const { registerViewForCollapse } = require('./viewManager');
+        registerViewForCollapse(SolvedProblemsViewProvider.viewType, webviewView);
+
         // Handle messages from webview
         webviewView.webview.onDidReceiveMessage(
             async (message) => {
