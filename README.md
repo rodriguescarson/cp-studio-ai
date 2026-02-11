@@ -162,7 +162,7 @@ Track your progress across all platforms:
 - See checkmarks on solved problem files in explorer
 - Refresh manually: `Cmd+Shift+P` → "CP Studio: Refresh Solved Problems"
 
-### 📋 Quick Actions
+### 📋 Quick Actions & Keyboard Shortcuts
 
 Essential shortcuts for competitive programming:
 
@@ -171,6 +171,25 @@ Essential shortcuts for competitive programming:
 - ✅ **Refresh Data**: Update contests, profile, and solved problems
 - ✅ **Clear Chat**: Start fresh conversations
 - ✅ **Chat History**: Access previous AI conversations
+
+**Keyboard shortcuts (customizable in Keybindings):**
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+T` (Mac: `Cmd+Shift+T`) | Run Tests |
+| `Ctrl+Shift+A` (Mac: `Cmd+Shift+A`) | AI Analysis |
+| `Ctrl+Shift+U` (Mac: `Cmd+Shift+U`) | Setup Problem from URL |
+| `Ctrl+Shift+I` (Mac: `Cmd+Shift+I`) | Open Chat |
+
+**Status bar:** When a solution file is open, the status bar shows your Codeforces rating, current problem (e.g. CF 2112A), and a quick **Run** button.
+
+### 🎯 Multi-Language & Testing
+
+- ✅ **C++, Python, Java**: Choose your language in Settings (`codeforces.language`). Templates and test runner adapt automatically.
+- ✅ **Multiple test cases**: Use `in1.txt`/`out1.txt`, `in2.txt`/`out2.txt`, etc. Per-case pass/fail and timing are shown.
+- ✅ **Add Test Case**: Use the **+** button in the editor toolbar to add new test case files.
+- ✅ **Problem Statement viewer**: Click **View Problem Statement** (or the problem label in the status bar) to open a formatted problem statement in a side panel.
+- ✅ **Diff on failure**: When tests fail, a side-by-side diff (expected vs actual) opens automatically.
 
 ---
 
@@ -299,11 +318,15 @@ Competitive programming is about solving problems, not managing tools. CP Studio
 1. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 2. Type: `Extensions: Install from VSIX...`
 3. Select the downloaded `.vsix` file
-4. Or install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=rodriguescarson.cf-studio)
+4. Or install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=rodriguescarson.cp-studio-ai)
 
-### Step 2: Install C++ Compiler
+**First run:** CP Studio will open a **Get Started** walkthrough. Follow the steps to set your Codeforces username, configure your AI API key, and set up your first problem. You can also open it anytime via the Get Started view or Command Palette.
 
-**macOS:**
+### Step 2: Install a compiler (C++, Python, or Java)
+
+CP Studio supports **C++**, **Python**, and **Java**. Set your preferred language in Settings → `codeforces.language` (default: C++).
+
+**C++ (macOS):**
 ```bash
 xcode-select --install
 ```
@@ -313,9 +336,12 @@ xcode-select --install
 sudo apt update && sudo apt install build-essential g++
 ```
 
-**Windows:**
+**C++ (Windows):**
 - Install [MinGW-w64](https://www.mingw-w64.org/downloads/) or
 - Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+
+**Python:** Install [python.org](https://www.python.org/) or `python3` via your package manager.  
+**Java:** Install a JDK (e.g. [Eclipse Temurin](https://adoptium.net/)).
 
 ### Step 3: Configure (Optional)
 
@@ -358,15 +384,15 @@ Cmd+Shift+P → "CP Studio: Setup Problem from URL"
 
 ### Running Tests
 
-1. Open `main.cpp` in any problem directory
-2. Click ▶️ **Run Tests** button
-3. View results in Output panel
+1. Open your solution file (`main.cpp`, `main.py`, or `Main.java`) in any problem directory
+2. Click ▶️ **Run Tests** (or press `Ctrl+Shift+T` / `Cmd+Shift+T`)
+3. View results in the Output panel; on failure, a diff view (expected vs actual) opens
 
 **What happens:**
-- Code compiles with `g++ -std=c++17 -O2`
-- Runs with `in.txt` as input
-- Compares output with `out.txt`
-- Shows detailed pass/fail results
+- **C++:** Compiles with `g++ -std=c++17 -O2`, then runs
+- **Python/Java:** Runs with `python3` or `java`
+- Supports single (`in.txt`/`out.txt`) or multiple test cases (`in1.txt`/`out1.txt`, …)
+- Per-case pass/fail and timing; failed tests show a side-by-side diff
 
 ### Using AI Features
 
@@ -403,6 +429,7 @@ Open Settings (`Cmd+,` or `Ctrl+,`) and search for "codeforces":
 | `codeforces.contestsPath` | Path to Codeforces contests directory | `${workspaceFolder}/contests` |
 | `codeforces.leetcodePath` | Path to LeetCode problems directory | `${workspaceFolder}/leetcode` |
 | `codeforces.geeksforgeeksPath` | Path to GeeksforGeeks problems directory | `${workspaceFolder}/geeksforgeeks` |
+| `codeforces.language` | Preferred language for templates and tests (`cpp`, `python`, `java`) | `cpp` |
 | `codeforces.aiProvider` | AI provider (`openrouter`, `openai`, `anthropic`, `custom`) | `openrouter` |
 | `codeforces.aiApiKey` | Your API key for AI features | (empty) |
 | `codeforces.aiModel` | Model to use (e.g., `openai/gpt-4o:online`) | `openai/gpt-4o:online` |

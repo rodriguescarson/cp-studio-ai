@@ -8,15 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial public release
-- Multi-platform support (Codeforces, LeetCode, GeeksforGeeks)
-- AI-powered code analysis with BYOK (Bring Your Own Key)
-- Interactive chat assistant
-- Contest and profile dashboard
-- Solved problems tracking
-- Curated problem sets (A2OJ, NeetCode, Love Babbar, Striver's)
-- One-click test runner
-- URL-based problem setup
+- (Future changes)
+
+## [1.0.12] - 2026-02-11
+
+### Added
+- **Get Started walkthrough** – 5-step guided setup (profile, API key, first problem, first test, chat)
+- **Status bar** – Rating, active problem context, streak count, and quick Run button
+- **Multi-language support** – Python and Java alongside C++ (templates and test runner; setting: `codeforces.language`)
+- **Multiple test cases** – `in1.txt`/`out1.txt`, `in2.txt`/`out2.txt`, etc., with per-case pass/fail and timing
+- **Add Test Case** – Editor toolbar button to add new test case files
+- **Problem Statement viewer** – Side panel with formatted problem statement (markdown-style)
+- **Keyboard shortcuts** – Run Tests (`Ctrl+Shift+T`), AI Analysis (`Ctrl+Shift+A`), Setup from URL (`Ctrl+Shift+U`), Open Chat (`Ctrl+Shift+I`)
+- **Daily streak tracker** – Consecutive days of solving with milestone celebrations
+- **Achievement badges** – 14 milestones (First Blood, Century, Rising Star, etc.) with unlock notifications
+- **Enhanced profile dashboard** – Difficulty breakdown, 90-day activity heat map, streak and achievement display
+- **Design system** – Shared CSS tokens, skeleton loaders, micro-animations, empty-state illustrations
+- **Chat UI polish** – Typing indicator, scroll-to-bottom button, message animations
+- **Diff view on test failure** – Side-by-side expected vs actual output
+- **Search in Solved Problems** – Filter by problem ID
+- **Accessibility** – ARIA labels, keyboard navigation, screen reader support, high-contrast considerations
+- **Unit tests** – Test runner, streak, and achievement logic; run with `npm test`; CI runs tests on push/PR
+
+### Changed
+- First activation opens Get Started walkthrough instead of only a reload prompt
+- Compiler auto-detection on startup with install hints per OS
+- Profile and solved-problems views use new design system and loading states
 
 ## [1.0.7] - 2026-02-01
 
