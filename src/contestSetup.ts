@@ -504,7 +504,7 @@ export class ContestSetup {
             // Fallback to old method if new fetcher fails
             throw new Error('ProblemStatementFetcher returned null');
         } catch (error: any) {
-            // Fallback: try original method
+            // Fallback: try original method with improved formatting
             try {
                 const response = await axios.get(url, {
                     headers: {
@@ -526,8 +526,15 @@ export class ContestSetup {
                 const header = problemDiv.find('div.header').first();
                 if (header.length > 0) {
                     const title = header.find('.title').text().trim();
-                    const timeLimit = header.find('.time-limit').text().trim();
-                    const memoryLimit = header.find('.memory-limit').text().trim();
+                    
+                    // Properly extract time/memory limit values (strip property-title text)
+                    const timeLimitEl = header.find('.time-limit').first();
+                    const timeLimitTitle = timeLimitEl.find('.property-title').text().trim();
+                    const timeLimit = timeLimitEl.text().trim().replace(timeLimitTitle, '').trim();
+                    
+                    const memoryLimitEl = header.find('.memory-limit').first();
+                    const memoryLimitTitle = memoryLimitEl.find('.property-title').text().trim();
+                    const memoryLimit = memoryLimitEl.text().trim().replace(memoryLimitTitle, '').trim();
                     
                     if (title) problemStatement += `# ${title}\n\n`;
                     if (timeLimit) problemStatement += `**Time Limit:** ${timeLimit}\n\n`;
@@ -539,10 +546,36 @@ export class ContestSetup {
                     const classList = $elem.attr('class') || '';
                     if (classList.includes('header')) return;
                     
+                    // Handle sample-tests section specially
+                    if (classList.includes('sample-tests')) {
+                        let exampleText = '';
+                        const sampleTitle = $elem.find('> .section-title').first().text().trim();
+                        
+                        $elem.find('.sample-test').each((__, sampleElem) => {
+                            const $sample = $(sampleElem);
+                            $sample.find('.input, .output').each((___, ioElem) => {
+                                const $io = $(ioElem);
+                                const ioTitle = $io.find('.section-title').text().trim();
+                                const preElem = $io.find('pre');
+                                const preText = ProblemStatementFetcher.extractPreText($, preElem);
+                                if (preText) {
+                                    exampleText += `**${ioTitle}:**\n\`\`\`\n${preText}\n\`\`\`\n\n`;
+                                }
+                            });
+                        });
+                        
+                        if (exampleText) {
+                            problemStatement += `## ${sampleTitle || 'Examples'}\n\n${exampleText}`;
+                        }
+                        return;
+                    }
+                    
                     const sectionTitle = $elem.find('.section-title').first();
                     const $contentElem = $elem.clone();
                     $contentElem.find('.section-title').remove();
                     let content = $contentElem.text().trim().replace(/\n{3,}/g, '\n\n');
+                    // Convert Codeforces LaTeX $$$...$$ to standard $...$
+                    content = content.replace(/\$\$\$(.*?)\$\$\$/g, '$$$1$$');
                     
                     if (content && content.length > 5) {
                         const lowerContent = content.toLowerCase();
@@ -597,21 +630,23 @@ export class ContestSetup {
         const inputs: string[] = [];
         const outputs: string[] = [];
 
+        // Use extractPreText to properly handle <br> and <div> tags inside <pre>
         $('div.input pre').each((_, elem) => {
-            const text = $(elem).text().trim();
+            const text = ProblemStatementFetcher.extractPreText($, $(elem));
             if (text) {
                 inputs.push(text);
             }
         });
 
         $('div.output pre').each((_, elem) => {
-            const text = $(elem).text().trim();
+            const text = ProblemStatementFetcher.extractPreText($, $(elem));
             if (text) {
                 outputs.push(text);
             }
         });
 
         if (inputs.length > 0 && outputs.length > 0) {
+            // Write each test case separated by blank lines
             fs.writeFileSync(path.join(problemDir, 'in.txt'), inputs.join('\n\n'));
             fs.writeFileSync(path.join(problemDir, 'out.txt'), outputs.join('\n\n'));
         } else {

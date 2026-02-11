@@ -54,6 +54,11 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
                     case 'setupProfile':
                         await vscode.commands.executeCommand('codeforces.setupProfile');
                         break;
+                    case 'setupFromUrl':
+                        if (message.url && message.url.trim()) {
+                            await vscode.commands.executeCommand('codeforces.setupFromUrl', message.url.trim());
+                        }
+                        break;
                     case 'changeUsername':
                         const newUsername = await vscode.window.showInputBox({
                             prompt: 'Enter your Codeforces username',
@@ -321,10 +326,15 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
             overflow: hidden;
         }
 
+        #quick-setup {
+            margin: 12px 12px 0 12px;
+            flex-shrink: 0;
+        }
+
         #content {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 12px;
             min-height: 0;
         }
 
@@ -540,13 +550,149 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
         .action-btn:hover {
             background: var(--vscode-button-secondaryHoverBackground);
         }
+
+        /* Quick Setup Section */
+        .quick-setup {
+            margin-bottom: 16px;
+            padding: 14px;
+            background: var(--vscode-card-background);
+            border: 1px solid var(--vscode-card-border);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-setup h3 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--vscode-foreground);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-setup-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .quick-setup-input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: var(--vscode-font-family);
+            outline: none;
+        }
+
+        .quick-setup-input:focus {
+            border-color: var(--vscode-focusBorder);
+        }
+
+        .quick-setup-input::placeholder {
+            color: var(--vscode-input-placeholderForeground);
+        }
+
+        .quick-setup-btn {
+            padding: 6px 14px;
+            background: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .quick-setup-btn:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
+
+        .quick-setup-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quick-setup-hint {
+            margin-top: 8px;
+            font-size: 11px;
+            opacity: 0.65;
+            line-height: 1.4;
+        }
+
+        .quick-setup-error {
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--vscode-errorForeground);
+            display: none;
+        }
     </style>
 </head>
     <body>
-    <div id="content" style="height: 100%; overflow-y: auto;">Loading...</div>
+    <div id="quick-setup" class="quick-setup">
+        <h3>&#9889; Problem Setup</h3>
+        <div class="quick-setup-row">
+            <input type="text" id="url-input" class="quick-setup-input" 
+                   placeholder="Paste problem or contest URL..." 
+                   spellcheck="false" autocomplete="off" />
+            <button id="setup-btn" class="quick-setup-btn" onclick="setupFromUrl()">Setup</button>
+        </div>
+        <div id="url-error" class="quick-setup-error"></div>
+        <div class="quick-setup-hint">Codeforces, LeetCode, GeeksforGeeks</div>
+    </div>
+    <div id="content" style="flex: 1; overflow-y: auto; padding: 0 15px 15px 15px;">Loading...</div>
     <script>
         const vscode = acquireVsCodeApi();
         const contentDiv = document.getElementById('content');
+        const urlInput = document.getElementById('url-input');
+        const urlError = document.getElementById('url-error');
+        const setupBtn = document.getElementById('setup-btn');
+
+        function isValidUrl(url) {
+            return url && (
+                url.includes('codeforces.com') ||
+                url.includes('leetcode.com') ||
+                url.includes('geeksforgeeks.org')
+            );
+        }
+
+        function setupFromUrl() {
+            const url = urlInput.value.trim();
+            if (!url) {
+                urlError.textContent = 'Please enter a URL';
+                urlError.style.display = 'block';
+                return;
+            }
+            if (!isValidUrl(url)) {
+                urlError.textContent = 'Unsupported URL. Use Codeforces, LeetCode, or GeeksforGeeks.';
+                urlError.style.display = 'block';
+                return;
+            }
+            urlError.style.display = 'none';
+            setupBtn.disabled = true;
+            setupBtn.textContent = 'Setting up...';
+            vscode.postMessage({ command: 'setupFromUrl', url: url });
+            
+            // Re-enable after a delay
+            setTimeout(() => {
+                setupBtn.disabled = false;
+                setupBtn.textContent = 'Setup';
+                urlInput.value = '';
+            }, 3000);
+        }
+
+        // Handle Enter key in URL input
+        urlInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                setupFromUrl();
+            }
+            // Clear error on typing
+            urlError.style.display = 'none';
+        });
 
         function setupProfile() {
             vscode.postMessage({ command: 'setupProfile' });

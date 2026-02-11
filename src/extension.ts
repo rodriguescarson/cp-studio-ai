@@ -119,14 +119,20 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     // Register commands
-    const setupCommand = vscode.commands.registerCommand('codeforces.setupFromUrl', async () => {
+    const setupCommand = vscode.commands.registerCommand('codeforces.setupFromUrl', async (urlArg?: string) => {
         try {
-            const url = await vscode.window.showInputBox({
-                prompt: 'Paste Codeforces contest/problem URL',
+            const url = urlArg || await vscode.window.showInputBox({
+                prompt: 'Paste problem URL (Codeforces, LeetCode, or GeeksforGeeks)',
                 placeHolder: 'https://codeforces.com/contest/2112/problem/A',
                 validateInput: (value) => {
-                    if (!value || !value.includes('codeforces.com')) {
-                        return 'Please enter a valid Codeforces URL';
+                    if (!value) {
+                        return 'Please enter a URL';
+                    }
+                    const isValid = value.includes('codeforces.com') ||
+                                    value.includes('leetcode.com') ||
+                                    value.includes('geeksforgeeks.org');
+                    if (!isValid) {
+                        return 'Please enter a valid Codeforces, LeetCode, or GeeksforGeeks URL';
                     }
                     return null;
                 }
