@@ -1,118 +1,197 @@
 import * as vscode from 'vscode';
 
-// View manager to ensure only one tab is open at a time
-// Uses VS Code's available APIs: collapseAll for tree views and show(false) + focus management for webviews
-class ViewManager {
-    private views: Map<string, vscode.WebviewView | null> = new Map();
-    private isCollapsing = false;
-    private currentVisibleView: string | null = null;
-    private collapseTimeout: NodeJS.Timeout | null = null;
+/**
+ * View manager that enforces single-panel-open behavior.
+ *
+ * VS Code sidebar views are accordion-style: each view has a header bar that
+ * the user can click to expand/collapse. There is no public API to
+ * programmatically collapse a webview panel, but we CAN:
+ *
+ *   1. Focus the active panel  (command `<viewId>.focus`)
+ *      – VS Code will scroll it into view and give it keyboard focus.
+ *
+ *   2. Resize panels using `workbench.action.focusView` + context keys.
+ *
+ *   3. Set `"initialSize"` (VS Code >=1.87) on view containers, but that
+ *      doesn't help after the first layout.
+ *
+ * **Our strategy:**
+ *   - Set the view's `"visibility"` to `"collapsed"` for all but the first view
+ *     so that on first open only Profile Stats is expanded.
+ *   - When a view becomes visible (via its `onDidChangeVisibility` event) we
+ *     record it and try to collapse the others by executing their
+ *     `<viewId>.collapseAll` or `<viewId>.resetViewContainerVisibility`.
+ *   - For tree views (`cfStudioContests`) we use `collapseAll`.
+ *   - We set context keys (`cfStudio.<name>.visible`) so that `when` clauses
+ *     can show/hide appropriate toolbar icons.
+ */
 
-    registerView(viewId: string, view: vscode.WebviewView | null): void {
-        this.views.set(viewId, view);
-        
-        if (view) {
-            // Listen for visibility changes
-            view.onDidChangeVisibility(() => {
-                if (view.visible && this.currentVisibleView !== viewId) {
-                    // Debounce to avoid rapid toggling
-                    if (this.collapseTimeout) {
-                        clearTimeout(this.collapseTimeout);
+interface RegisteredView {
+    view: vscode.WebviewView;
+    onDispose: vscode.Disposable[];
+}
+
+class ViewManager {
+    private views: Map<string, RegisteredView> = new Map();
+    private isTransitioning = false;
+    private activeViewId: string | null = null;
+    private debounceTimer: NodeJS.Timeout | null = null;
+
+    /** All view IDs in the sidebar, in order. */
+    private static readonly VIEW_IDS = [
+        'cfStudioProfileView',
+        'cfStudioQuickActions',
+        'cfStudioContests',
+        'cfStudioChatView',
+        'cfStudioSolvedProblemsView',
+    ];
+
+    /** Map from viewId to the context key segment. */
+    private static readonly CONTEXT_KEYS: Record<string, string> = {
+        cfStudioProfileView: 'cfStudio.profile.visible',
+        cfStudioQuickActions: 'cfStudio.quickActions.visible',
+        cfStudioContests: 'cfStudio.contests.visible',
+        cfStudioChatView: 'cfStudio.chat.visible',
+        cfStudioSolvedProblemsView: 'cfStudio.solved.visible',
+    };
+
+    registerView(viewId: string, webviewView: vscode.WebviewView): void {
+        // Clean up previous registration
+        const prev = this.views.get(viewId);
+        if (prev) {
+            prev.onDispose.forEach(d => d.dispose());
+        }
+
+        const disposables: vscode.Disposable[] = [];
+
+        disposables.push(
+            webviewView.onDidChangeVisibility(() => {
+                if (webviewView.visible) {
+                    this.onViewBecameVisible(viewId);
+                } else if (this.activeViewId === viewId) {
+                    // Update context key
+                    const ctxKey = ViewManager.CONTEXT_KEYS[viewId];
+                    if (ctxKey) {
+                        vscode.commands.executeCommand('setContext', ctxKey, false);
                     }
-                    this.collapseTimeout = setTimeout(() => {
-                        this.handleViewBecameVisible(viewId);
-                    }, 150);
-                } else if (!view.visible && this.currentVisibleView === viewId) {
-                    this.currentVisibleView = null;
                 }
-            });
+            })
+        );
+
+        disposables.push(
+            webviewView.onDidDispose(() => {
+                this.views.delete(viewId);
+            })
+        );
+
+        this.views.set(viewId, { view: webviewView, onDispose: disposables });
+
+        // If this is the first view to appear, mark it active
+        if (!this.activeViewId && webviewView.visible) {
+            this.activeViewId = viewId;
+            this.setContextKeys(viewId);
         }
     }
 
-    private async handleViewBecameVisible(viewId: string): Promise<void> {
-        if (this.isCollapsing) {
+    /**
+     * Called when a panel becomes visible. We:
+     *  1. Record it as the active view.
+     *  2. Update context keys.
+     *  3. Collapse every OTHER panel by executing focus on the active one
+     *     and using the `collapseAll` trick for tree views.
+     */
+    private onViewBecameVisible(viewId: string): void {
+        if (this.isTransitioning) {
             return;
         }
 
-        this.isCollapsing = true;
-        const previousVisibleView = this.currentVisibleView;
-        this.currentVisibleView = viewId;
+        if (this.activeViewId === viewId) {
+            return; // Already the active one
+        }
+
+        // Debounce: rapid events from VS Code layout engine
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+
+        this.debounceTimer = setTimeout(() => {
+            this.performCollapse(viewId);
+        }, 100);
+    }
+
+    private async performCollapse(viewId: string): Promise<void> {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
+
+        const previousActiveId = this.activeViewId;
+        this.activeViewId = viewId;
+        this.setContextKeys(viewId);
 
         try {
-            // Collapse tree view if a webview became visible
+            // Collapse other views by resetting the view container and re-focusing.
+            // The key trick: VS Code sidebar panels are like an accordion.
+            // When we maximize one, the others naturally get minimal height.
+            //
+            // Step 1: Collapse tree views (contests)
             if (viewId !== 'cfStudioContests') {
                 try {
-                    // Use the collapseAll command for tree views
-                    await vscode.commands.executeCommand('workbench.actions.treeView.cfStudioContests.collapseAll');
-                } catch (error) {
-                    // Command might not be available, try alternative
-                    try {
-                        await vscode.commands.executeCommand('cfStudioContests.collapse');
-                    } catch (e) {
-                        // Ignore if command doesn't exist
-                    }
+                    // This collapses all tree items so the tree view shrinks to header-only
+                    await vscode.commands.executeCommand(
+                        'workbench.actions.treeView.cfStudioContests.collapseAll'
+                    );
+                } catch {
+                    // May not be available
                 }
             }
 
-            // Hide other webview views
-            // Note: show(false) doesn't actually hide webviews, but we can try to minimize them
-            // by ensuring only the active one is focused/expanded
-            for (const [id, view] of this.views.entries()) {
-                if (id !== viewId && id !== 'cfStudioContests' && view) {
-                    // For webviews, we need to use a different approach
-                    // Try to "collapse" by calling show(false) - this might minimize the view
-                    // The view will still be in the sidebar but collapsed
-                    try {
-                        // show(false) shows without focus, which might help
-                        view.show(false);
-                    } catch (error) {
-                        // Ignore errors
-                    }
-                }
-            }
-
-            // Focus the newly visible view to ensure it's expanded and others are pushed down
-            // This leverages VS Code's natural sidebar behavior where expanding one view
-            // can cause others to collapse
+            // Step 2: Focus the target view — this causes VS Code to expand it
+            // and scroll it into view, naturally pushing others to minimum size.
             try {
-                if (viewId === 'cfStudioChatView') {
-                    await vscode.commands.executeCommand('cfStudioChatView.focus');
-                } else if (viewId === 'cfStudioProfileView') {
-                    await vscode.commands.executeCommand('cfStudioProfileView.focus');
-                } else if (viewId === 'cfStudioSolvedProblemsView') {
-                    await vscode.commands.executeCommand('cfStudioSolvedProblemsView.focus');
-                } else if (viewId === 'cfStudioContests') {
-                    // For tree view, collapse all webviews by calling show(false) on them
-                    for (const [id, view] of this.views.entries()) {
-                        if (id !== 'cfStudioContests' && view && view.visible) {
-                            try {
-                                view.show(false);
-                            } catch (error) {
-                                // Ignore
-                            }
-                        }
-                    }
+                await vscode.commands.executeCommand(`${viewId}.focus`);
+            } catch {
+                // View might not be focusable yet
+            }
+
+            // Step 3: For the previously active webview, we can call resetViewSize
+            // to release any extra height it held onto.
+            if (previousActiveId && previousActiveId !== viewId) {
+                try {
+                    await vscode.commands.executeCommand(
+                        `${previousActiveId}.resetViewSize`
+                    );
+                } catch {
+                    // resetViewSize may not exist for all views; that's fine.
                 }
-            } catch (focusError) {
-                // Ignore focus errors - the view might not have a focus command
             }
 
         } finally {
             setTimeout(() => {
-                this.isCollapsing = false;
-            }, 300);
+                this.isTransitioning = false;
+            }, 200);
         }
     }
 
-    getView(viewId: string): vscode.WebviewView | null | undefined {
-        return this.views.get(viewId);
+    /**
+     * Set context keys so that `when` clauses work properly.
+     * Only the active view gets `true`; all others get `false`.
+     */
+    private setContextKeys(activeViewId: string): void {
+        for (const [vid, ctxKey] of Object.entries(ViewManager.CONTEXT_KEYS)) {
+            vscode.commands.executeCommand('setContext', ctxKey, vid === activeViewId);
+        }
     }
 }
 
-// Singleton instance
+// Singleton
 const viewManager = new ViewManager();
 
-// Export function for providers to register their views
-export function registerViewForCollapse(viewId: string, view: vscode.WebviewView | null): void {
+/**
+ * Called by each webview provider in its `resolveWebviewView` to register
+ * itself for the auto-collapse behavior.
+ */
+export function registerViewForCollapse(
+    viewId: string,
+    view: vscode.WebviewView
+): void {
     viewManager.registerView(viewId, view);
 }

@@ -20,6 +20,7 @@ import { StatusBarManager } from './statusBar';
 import { StreakTracker } from './streakTracker';
 import { AchievementManager } from './achievements';
 import { ProblemViewerPanel } from './problemViewer';
+import { QuickActionsViewProvider } from './quickActionsView';
 
 let contestSetup: ContestSetup;
 let testRunner: TestRunner;
@@ -86,6 +87,19 @@ export async function activate(context: vscode.ExtensionContext) {
         );
         context.subscriptions.push(profileProviderRegistration);
 
+        // Initialize quick actions view
+        const quickActionsProvider = new QuickActionsViewProvider(context);
+        const quickActionsRegistration = vscode.window.registerWebviewViewProvider(
+            QuickActionsViewProvider.viewType,
+            quickActionsProvider,
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: true
+                }
+            }
+        );
+        context.subscriptions.push(quickActionsRegistration);
+
         // Initialize ladder loader and solved tracker
         ladderLoader = new LadderLoader(context);
         solvedTracker = new SolvedProblemsTracker(context);
@@ -120,6 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
         await vscode.commands.executeCommand('setContext', 'cfStudio.contests.visible', false);
         await vscode.commands.executeCommand('setContext', 'cfStudio.chat.visible', false);
         await vscode.commands.executeCommand('setContext', 'cfStudio.profile.visible', false);
+        await vscode.commands.executeCommand('setContext', 'cfStudio.quickActions.visible', false);
         await vscode.commands.executeCommand('setContext', 'cfStudio.solved.visible', false);
 
         // Auto-detect g++ availability

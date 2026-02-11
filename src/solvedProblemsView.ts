@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { SolvedProblemsTracker } from './solvedTracker';
 import { getDesignSystemCSS } from './designSystem';
+import { registerViewForCollapse } from './viewManager';
 
 export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'cfStudioSolvedProblemsView';
@@ -34,7 +35,6 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this.getWebviewContent();
 
         // Register with view manager for single-tab behavior
-        const { registerViewForCollapse } = require('./viewManager');
         registerViewForCollapse(SolvedProblemsViewProvider.viewType, webviewView);
 
         // Handle messages from webview

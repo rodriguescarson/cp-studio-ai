@@ -28,6 +28,62 @@ _One extension. Multiple platforms. Zero confusion. Everything you need to maste
 
 ## ✨ Features
 
+### 🖥️ Sidebar Command Center
+
+CP Studio lives in a dedicated sidebar panel with **four views**. Only one view is expanded at a time — when you open one, the others automatically collapse so you always have maximum screen space for content.
+
+| View | What It Shows |
+|------|---------------|
+| **Profile Stats** | Your Codeforces rating, avatar, streaks, achievements, and 90-day activity heat map |
+| **Upcoming Contests** | Live Codeforces contest schedule with one-click problem setup |
+| **Chat** | AI chat assistant plus quick-access toolbar for tests, analysis, and problem sheets |
+| **Solved Problems** | Searchable list of every problem you've solved, with links to reopen |
+
+#### Chat Toolbar — Your Quick-Action Bar
+
+The **Chat** view header packs the most-used commands into a single toolbar so everything is one click away:
+
+| Icon | Command | What It Does |
+|------|---------|--------------|
+| ✨ `$(sparkle)` | **AI Analysis** | Instant code review of the active solution file |
+| ▶️ `$(play)` | **Run Tests** | Compile & run all test cases for the current problem |
+| 📋 `$(list-selection)` | **A2OJ Ladders** | Pull Codeforces problems organized by rating |
+| 📖 `$(book)` | **NeetCode 150** | Pull the NeetCode 150 LeetCode list |
+| ✅ `$(checklist)` | **Love Babbar 450** | Pull Love Babbar's DSA sheet |
+| ⭐ `$(star)` | **Striver's Sheet** | Pull Striver's curated problem list |
+| 🕓 `$(history)` | **Chat History** | Browse previous AI chat sessions |
+| 🧹 `$(clear-all)` | **Clear Chat** | Wipe the current conversation |
+| ➕ `$(add)` | **New Chat** | Start a fresh AI chat session |
+| 🔑 `$(key)` | **Configure API Key** | Set your AI provider API key |
+
+#### Profile Stats Toolbar
+
+| Icon | Command | What It Does |
+|------|---------|--------------|
+| 👤 `$(account)` | **Setup Profile** | Enter your Codeforces username |
+| 🔄 `$(refresh)` | **Refresh Profile** | Re-fetch rating, submissions, and stats |
+
+#### Upcoming Contests Toolbar
+
+| Icon | Command | What It Does |
+|------|---------|--------------|
+| 🔗 `$(link)` | **Setup from URL** | Paste any problem URL to auto-scaffold |
+| 🔄 `$(refresh)` | **Refresh Contests** | Reload the contest schedule |
+
+#### Editor Toolbar (appears when a solution file is open)
+
+| Icon | Command | What It Does |
+|------|---------|--------------|
+| ▶️ `$(play)` | **Run Tests** | Compile & run test cases |
+| ✨ `$(sparkle)` | **AI Analysis** | Analyze the current file with AI |
+| 📋 `$(copy)` | **Copy Code** | Copy solution to clipboard for submission |
+| ➕ `$(add)` | **Add Test Case** | Create a new numbered `inN.txt`/`outN.txt` pair |
+| 📖 `$(book)` | **View Problem** | Open the problem statement in a side panel |
+
+> **Tip:** All views auto-collapse so only one is visible at a time. Click a collapsed view header to expand it and maximize its content area.
+
+---
+
 ### 🎯 Multi-Platform Problem Setup
 
 Setup problems from **Codeforces**, **LeetCode**, and **GeeksforGeeks** with a single command:

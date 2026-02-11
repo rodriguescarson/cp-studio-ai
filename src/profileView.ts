@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CodeforcesAPI } from './codeforcesApi';
 import { SolvedProblemsTracker } from './solvedTracker';
 import { getDesignSystemCSS } from './designSystem';
+import { registerViewForCollapse } from './viewManager';
 
 export class ProfileViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'cfStudioProfileView';
@@ -47,7 +48,6 @@ export class ProfileViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this.getWebviewContent();
 
         // Register with view manager for single-tab behavior
-        const { registerViewForCollapse } = require('./viewManager');
         registerViewForCollapse(ProfileViewProvider.viewType, webviewView);
 
         // Handle messages from webview

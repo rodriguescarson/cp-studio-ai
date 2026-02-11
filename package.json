@@ -2,7 +2,7 @@
   "name": "cp-studio-ai",
   "displayName": "CP Studio AI",
   "description": "The All-in-One Competitive Programming Workspace for VS Code & Cursor. Setup problems from Codeforces, LeetCode, and GeeksforGeeks instantly, test solutions locally, get AI-powered code analysis, and track your progress—all from your editor.",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "publisher": "rodriguescarson",
   "author": {
     "name": "Carson Rodrigues",
@@ -222,54 +222,19 @@
           "group": "navigation"
         },
         {
-          "command": "codeforces.pullA2OJLadder",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.pullNeetCode",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.pullLoveBabbar",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.pullStrivers",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.runTests",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.aiAnalysis",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
-          "command": "codeforces.clearChat",
-          "when": "view == cfStudioChatView",
-          "group": "navigation"
-        },
-        {
           "command": "codeforces.newChat",
           "when": "view == cfStudioChatView",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "codeforces.showChatHistory",
           "when": "view == cfStudioChatView",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
-          "command": "codeforces.configureApiKey",
+          "command": "codeforces.clearChat",
           "when": "view == cfStudioChatView",
-          "group": "navigation"
+          "group": "navigation@3"
         },
         {
           "command": "codeforces.setupProfile",
@@ -289,24 +254,35 @@
           "id": "cfStudioProfileView",
           "name": "Profile Stats",
           "type": "webview",
-          "when": "true"
+          "when": "true",
+          "visibility": "visible"
+        },
+        {
+          "id": "cfStudioQuickActions",
+          "name": "Quick Actions",
+          "type": "webview",
+          "when": "true",
+          "visibility": "collapsed"
         },
         {
           "id": "cfStudioContests",
           "name": "Upcoming Contests",
-          "when": "true"
+          "when": "true",
+          "visibility": "collapsed"
         },
         {
           "id": "cfStudioChatView",
           "name": "Chat",
           "type": "webview",
-          "when": "true"
+          "when": "true",
+          "visibility": "collapsed"
         },
         {
           "id": "cfStudioSolvedProblemsView",
           "name": "Solved Problems",
           "type": "webview",
-          "when": "true"
+          "when": "true",
+          "visibility": "collapsed"
         }
       ]
     },

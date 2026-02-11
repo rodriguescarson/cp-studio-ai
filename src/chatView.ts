@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ChatManager, ChatSession, isValidFilePath } from './chatManager';
 import { AIAnalyzer } from './aiAnalyzer';
 import { CodeCopier } from './codeCopier';
+import { registerViewForCollapse } from './viewManager';
 import * as path from 'path';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
@@ -36,7 +37,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this.getWebviewContent();
 
         // Register with view manager for single-tab behavior
-        const { registerViewForCollapse } = require('./viewManager');
         registerViewForCollapse(ChatViewProvider.viewType, webviewView);
 
         // Handle messages from webview

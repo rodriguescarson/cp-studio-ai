@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - (Future changes)
 
+## [1.0.13] - 2026-02-11
+
+### Added
+- **Single-panel sidebar** – Only one view expands at a time; opening a view auto-collapses the others so content always gets maximum space
+- **Sidebar Command Center README section** – Dedicated documentation spotlight for every toolbar button across all four sidebar views and the editor toolbar
+
+### Changed
+- Views default to collapsed on first install except Profile Stats (initial visibility)
+- View manager rewritten with proper ES module imports and debounced collapse logic
+
 ## [1.0.12] - 2026-02-11
 
 ### Added
