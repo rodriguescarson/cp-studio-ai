@@ -164,24 +164,44 @@
         "command": "codeforces.showSolvedProblems",
         "title": "CP Studio: Show Solved Problems",
         "icon": "$(checklist)"
+      },
+      {
+        "command": "codeforces.addTestCase",
+        "title": "CP Studio: Add Test Case",
+        "icon": "$(add)"
+      },
+      {
+        "command": "codeforces.showProblemStatement",
+        "title": "CP Studio: View Problem Statement",
+        "icon": "$(book)"
       }
     ],
     "menus": {
       "editor/title": [
         {
           "command": "codeforces.runTests",
-          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "when": "resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/(main\\.cpp|main\\.py|Main\\.java)$/",
           "group": "navigation@1"
         },
         {
           "command": "codeforces.aiAnalysis",
-          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "when": "resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/(main\\.cpp|main\\.py|Main\\.java)$/",
           "group": "navigation@2"
         },
         {
           "command": "codeforces.copyCode",
-          "when": "resourceLangId == cpp && resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/main\\.cpp$/",
+          "when": "resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/(main\\.cpp|main\\.py|Main\\.java)$/",
           "group": "navigation@3"
+        },
+        {
+          "command": "codeforces.addTestCase",
+          "when": "resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/(main\\.cpp|main\\.py|Main\\.java)$/",
+          "group": "navigation@4"
+        },
+        {
+          "command": "codeforces.showProblemStatement",
+          "when": "resourcePath =~ /(contests|leetcode|geeksforgeeks)\\/.*\\/(main\\.cpp|main\\.py|Main\\.java)$/",
+          "group": "navigation@5"
         }
       ],
       "explorer/context": [
@@ -317,6 +337,16 @@
           "default": "${workspaceFolder}/geeksforgeeks",
           "description": "Path to GeeksforGeeks problems directory"
         },
+        "codeforces.language": {
+          "type": "string",
+          "enum": [
+            "cpp",
+            "python",
+            "java"
+          ],
+          "default": "cpp",
+          "description": "Preferred programming language for problem templates and test runner"
+        },
         "codeforces.aiProvider": {
           "type": "string",
           "enum": [
@@ -359,24 +389,115 @@
           "description": "Automatically refresh solved problems on extension activation"
         }
       }
-    }
+    },
+    "walkthroughs": [
+      {
+        "id": "cpStudioGettingStarted",
+        "title": "Get Started with CP Studio",
+        "description": "Set up your competitive programming workspace in under 2 minutes.",
+        "steps": [
+          {
+            "id": "setupProfile",
+            "title": "Set Your Codeforces Username",
+            "description": "Connect your Codeforces profile to track your rating, solved problems, and contest history.\n\n[Set Username](command:codeforces.setupProfile)",
+            "media": {
+              "markdown": "resources/walkthrough/step-profile.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:codeforces.username"
+            ]
+          },
+          {
+            "id": "configureAI",
+            "title": "Configure AI Assistant",
+            "description": "Get an API key from OpenRouter (free tier available) to unlock AI-powered code analysis, debugging help, and optimization suggestions.\n\n[Configure API Key](command:codeforces.configureApiKey)",
+            "media": {
+              "markdown": "resources/walkthrough/step-ai.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:codeforces.aiApiKey"
+            ]
+          },
+          {
+            "id": "setupFirstProblem",
+            "title": "Setup Your First Problem",
+            "description": "Paste any Codeforces, LeetCode, or GeeksforGeeks problem URL to instantly create your workspace with test cases and problem statement.\n\n[Setup Problem](command:codeforces.setupFromUrl)",
+            "media": {
+              "markdown": "resources/walkthrough/step-problem.md"
+            },
+            "completionEvents": [
+              "onCommand:codeforces.setupFromUrl"
+            ]
+          },
+          {
+            "id": "runFirstTest",
+            "title": "Run Your First Test",
+            "description": "Write your solution and click the play button in the editor toolbar (or press Ctrl+Shift+T) to compile and test against sample cases.\n\n[Run Tests](command:codeforces.runTests)",
+            "media": {
+              "markdown": "resources/walkthrough/step-test.md"
+            },
+            "completionEvents": [
+              "onCommand:codeforces.runTests"
+            ]
+          },
+          {
+            "id": "openChat",
+            "title": "Chat with AI Assistant",
+            "description": "Open the sidebar chat to ask questions about your code, get hints, or request a full analysis. Your code and problem context are sent automatically.\n\n[Open Chat](command:codeforces.openChat)",
+            "media": {
+              "markdown": "resources/walkthrough/step-chat.md"
+            },
+            "completionEvents": [
+              "onCommand:codeforces.openChat"
+            ]
+          }
+        ]
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "codeforces.runTests",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeforces.aiAnalysis",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeforces.setupFromUrl",
+        "key": "ctrl+shift+u",
+        "mac": "cmd+shift+u"
+      },
+      {
+        "command": "codeforces.openChat",
+        "key": "ctrl+shift+i",
+        "mac": "cmd+shift+i"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "build": "tsc -p ./",
+    "test": "npm run compile && mocha out/test/**/*.test.js --timeout 10000",
     "package": "vsce package --out builds"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.2.0",
     "@types/vscode": "^1.80.0",
+    "mocha": "^10.8.2",
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "axios": "^1.6.0",
     "cheerio": "^1.0.0-rc.12",
-    "marked": "^17.0.1",
-    "codeforces-api-ts": "^3.0.1"
+    "codeforces-api-ts": "^3.0.1",
+    "marked": "^17.0.1"
   }
 }

@@ -16,6 +16,10 @@ import { SolvedProblemsTracker } from './solvedTracker';
 import { SolvedProblemsViewProvider } from './solvedProblemsView';
 import { ProblemFileDecorationProvider } from './fileDecorationProvider';
 import { registerViewForCollapse } from './viewManager';
+import { StatusBarManager } from './statusBar';
+import { StreakTracker } from './streakTracker';
+import { AchievementManager } from './achievements';
+import { ProblemViewerPanel } from './problemViewer';
 
 let contestSetup: ContestSetup;
 let testRunner: TestRunner;
@@ -29,6 +33,9 @@ let ladderLoader: LadderLoader;
 let solvedTracker: SolvedProblemsTracker;
 let solvedProblemsViewProvider: SolvedProblemsViewProvider;
 let fileDecorationProvider: ProblemFileDecorationProvider;
+let statusBarManager: StatusBarManager;
+let streakTracker: StreakTracker;
+let achievementManager: AchievementManager;
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -44,6 +51,11 @@ export async function activate(context: vscode.ExtensionContext) {
         testRunner = new TestRunner(context);
         aiAnalyzer = new AIAnalyzer(context);
         codeCopier = new CodeCopier(context);
+        streakTracker = new StreakTracker(context);
+        achievementManager = new AchievementManager(context);
+
+        // Initialize status bar
+        statusBarManager = new StatusBarManager(context);
 
         // Initialize chat manager
         ChatManager.getInstance(context);
@@ -110,8 +122,8 @@ export async function activate(context: vscode.ExtensionContext) {
         await vscode.commands.executeCommand('setContext', 'cfStudio.profile.visible', false);
         await vscode.commands.executeCommand('setContext', 'cfStudio.solved.visible', false);
 
-        // Update chat view when active editor changes
-        // Note: File change handler is registered below after chatViewProvider is created
+        // Auto-detect g++ availability
+        detectCompiler();
     } catch (error: any) {
         console.error('Error initializing extension:', error);
         vscode.window.showErrorMessage(`Extension initialization failed: ${error?.message || error}`);
@@ -163,8 +175,11 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         const filePath = editor.document.uri.fsPath;
-        if (!filePath.includes('contests') || !filePath.endsWith('main.cpp')) {
-            vscode.window.showErrorMessage('Please open a main.cpp file in a contest directory');
+        const isContestFile = /\/(contests|leetcode|geeksforgeeks)\//.test(filePath) &&
+            /\/(main\.cpp|main\.py|Main\.java)$/.test(filePath);
+
+        if (!isContestFile) {
+            vscode.window.showErrorMessage('Please open a solution file (main.cpp, main.py, or Main.java) in a contest directory');
             return;
         }
 
@@ -179,13 +194,11 @@ export async function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            const filePath = editor.document.uri.fsPath;
-            if (!filePath.includes('contests') || !filePath.endsWith('main.cpp')) {
-                vscode.window.showErrorMessage('Please open a main.cpp file in a contest directory');
-                return;
-            }
+            // Track AI usage for achievements
+            await achievementManager.recordAiUse();
 
             if (chatViewProvider) {
+                const filePath = editor.document.uri.fsPath;
                 await chatViewProvider.show(filePath);
                 await chatViewProvider.runAnalysis();
             } else {
@@ -284,6 +297,7 @@ export async function activate(context: vscode.ExtensionContext) {
             
             vscode.window.showInformationMessage(`Username set to: ${username.trim()}`);
             profileViewProvider.refresh();
+            statusBarManager.updateRating();
         }
     });
 
@@ -293,6 +307,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const refreshProfileCommand = vscode.commands.registerCommand('codeforces.refreshProfile', () => {
         profileViewProvider.refresh();
+        statusBarManager.updateRating();
     });
 
     const clearChatCommand = vscode.commands.registerCommand('codeforces.clearChat', () => {
@@ -335,6 +350,16 @@ export async function activate(context: vscode.ExtensionContext) {
             await config.update('aiApiKey', apiKey.trim(), vscode.ConfigurationTarget.Global);
             vscode.window.showInformationMessage('API key configured successfully!');
         }
+    });
+
+    // Add test case command
+    const addTestCaseCommand = vscode.commands.registerCommand('codeforces.addTestCase', async () => {
+        await TestRunner.addTestCase();
+    });
+
+    // Show problem statement command
+    const showProblemStatementCommand = vscode.commands.registerCommand('codeforces.showProblemStatement', () => {
+        ProblemViewerPanel.showForActiveEditor();
     });
 
     // Helper function to show problem selection and handle setup/browsing
@@ -513,6 +538,24 @@ export async function activate(context: vscode.ExtensionContext) {
                 if (fileDecorationProvider) {
                     await fileDecorationProvider.refreshSolvedProblems();
                 }
+
+                // Check achievements
+                await achievementManager.checkAchievements({ solved: solved.size });
+                
+                // Record streak activity
+                const milestoneResult = await streakTracker.recordSolve();
+                if (milestoneResult?.milestone) {
+                    vscode.window.showInformationMessage(
+                        `🔥 ${milestoneResult.message}`
+                    );
+                }
+                statusBarManager.updateStreak();
+
+                // Check streak achievement
+                await achievementManager.checkAchievements({
+                    solved: solved.size,
+                    streak: streakTracker.getCount()
+                });
                 
                 vscode.window.showInformationMessage(
                     `Refreshed solved problems: ${solved.size} problems solved`
@@ -550,7 +593,9 @@ export async function activate(context: vscode.ExtensionContext) {
         pullLoveBabbarCommand,
         pullStriversCommand,
         refreshSolvedProblemsCommand,
-        showSolvedProblemsCommand
+        showSolvedProblemsCommand,
+        addTestCaseCommand,
+        showProblemStatementCommand
     );
 
     // Update chat view when active editor changes
@@ -578,37 +623,86 @@ export async function activate(context: vscode.ExtensionContext) {
         });
     }
 
-    // Handle first activation - open profile view and show reload prompt
+    // Handle first activation - show walkthrough
     if (isFirstActivation) {
         // Mark that we've activated at least once
         await context.globalState.update('cfStudio.firstActivation', false);
         
-        // Open profile view after a short delay to ensure it's registered
+        // Open the getting started walkthrough
         setTimeout(async () => {
             try {
-                // Show the profile view if it's already initialized
-                if (profileViewProvider) {
-                    profileViewProvider.show();
+                await vscode.commands.executeCommand(
+                    'workbench.action.openWalkthrough',
+                    'rodriguescarson.cp-studio-ai#cpStudioGettingStarted',
+                    false
+                );
+            } catch {
+                // Fallback if walkthrough command fails
+                try {
+                    if (profileViewProvider) {
+                        profileViewProvider.show();
+                    }
+                    await vscode.commands.executeCommand('cfStudioProfileView.focus');
+                } catch (error) {
+                    console.log('Could not open profile view:', error);
                 }
-                // Also try to focus it to ensure it's visible
-                await vscode.commands.executeCommand('cfStudioProfileView.focus');
-            } catch (error) {
-                console.log('Could not open profile view:', error);
+                
+                vscode.window.showInformationMessage(
+                    'Welcome to CP Studio! Set up your profile to get started.',
+                    'Setup Profile',
+                    'Configure AI Key'
+                ).then(selection => {
+                    if (selection === 'Setup Profile') {
+                        vscode.commands.executeCommand('codeforces.setupProfile');
+                    } else if (selection === 'Configure AI Key') {
+                        vscode.commands.executeCommand('codeforces.configureApiKey');
+                    }
+                });
             }
-            
-            // Show reload prompt
-            vscode.window.showInformationMessage(
-                'CP Studio has been installed! Please reload the window to activate all features.',
-                'Reload Window'
-            ).then(selection => {
-                if (selection === 'Reload Window') {
-                    vscode.commands.executeCommand('workbench.action.reloadWindow');
-                }
-            });
         }, 1500);
     } else {
         // Show welcome message for subsequent activations
         vscode.window.showInformationMessage('CP Studio is ready! Use the command palette to get started.');
+    }
+}
+
+/**
+ * Auto-detect compiler availability and show helpful messages.
+ */
+async function detectCompiler(): Promise<void> {
+    const language = vscode.workspace.getConfiguration('codeforces').get<string>('language', 'cpp');
+    const { exec } = require('child_process');
+    const { promisify } = require('util');
+    const execAsync = promisify(exec);
+
+    try {
+        if (language === 'cpp') {
+            await execAsync('g++ --version');
+        } else if (language === 'python') {
+            await execAsync('python3 --version');
+        } else if (language === 'java') {
+            await execAsync('javac -version');
+        }
+    } catch {
+        const compilerNames: Record<string, string> = {
+            cpp: 'g++ (C++ compiler)',
+            python: 'python3',
+            java: 'javac (Java compiler)'
+        };
+        const installHints: Record<string, string> = {
+            cpp: 'Install via: brew install gcc (macOS), sudo apt install g++ (Ubuntu), or download from mingw-w64.org (Windows)',
+            python: 'Install from python.org or via: brew install python3 (macOS), sudo apt install python3 (Ubuntu)',
+            java: 'Install JDK from adoptium.net or via: brew install openjdk (macOS), sudo apt install default-jdk (Ubuntu)'
+        };
+
+        vscode.window.showWarningMessage(
+            `${compilerNames[language]} not found. ${installHints[language]}`,
+            'Change Language'
+        ).then(selection => {
+            if (selection === 'Change Language') {
+                vscode.commands.executeCommand('workbench.action.openSettings', 'codeforces.language');
+            }
+        });
     }
 }
 

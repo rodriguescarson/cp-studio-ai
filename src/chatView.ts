@@ -553,6 +553,95 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
             --cfx-diff-delete: var(--vscode-diffEditor-removedTextBackground, #3e2526);
         }
 
+        /* ===== Typing Indicator ===== */
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+            padding: 10px 14px;
+            background: var(--vscode-sideBar-background);
+            border-radius: 12px;
+            margin: 4px 0;
+        }
+        .typing-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--cfx-accent-primary);
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.32s; }
+        @keyframes typingBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* ===== Scroll to Bottom ===== */
+        .scroll-to-bottom {
+            position: absolute;
+            bottom: 80px;
+            right: 16px;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--cfx-accent-primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+            font-size: 14px;
+        }
+        .scroll-to-bottom.visible { opacity: 1; pointer-events: auto; }
+        .scroll-to-bottom:hover { transform: scale(1.1); }
+
+        /* ===== Message Timestamps ===== */
+        .message-time {
+            font-size: 10px;
+            opacity: 0.4;
+            margin-top: 4px;
+            transition: opacity 0.2s;
+        }
+        .message:hover .message-time { opacity: 0.7; }
+
+        /* ===== Message Animations ===== */
+        @keyframes messageSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message { animation: messageSlideIn 0.3s ease-out; }
+
+        /* ===== Collapsible Code Blocks ===== */
+        .code-collapse-btn {
+            display: block;
+            width: 100%;
+            padding: 4px 8px;
+            background: var(--vscode-textCodeBlock-background);
+            border: 1px solid var(--vscode-panel-border);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            color: var(--vscode-foreground);
+            font-size: 11px;
+            cursor: pointer;
+            text-align: left;
+            opacity: 0.7;
+        }
+        .code-collapse-btn:hover { opacity: 1; }
+        .code-block-collapsed { display: none; }
+
+        /* ===== Focus Visible ===== */
+        *:focus-visible {
+            outline: 2px solid var(--vscode-focusBorder);
+            outline-offset: 2px;
+        }
+
+        /* ===== High Contrast ===== */
+        @media (forced-colors: active) {
+            .toolbar-btn, .action-btn-small { border: 1px solid ButtonText; }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -1290,6 +1379,9 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     </style>
 </head>
 <body>
+    <!-- Scroll to Bottom Button -->
+    <button class="scroll-to-bottom" id="scrollToBottom" onclick="scrollToBottom()" aria-label="Scroll to latest message" title="Scroll to bottom">&#x25BC;</button>
+
     <!-- Define functions IMMEDIATELY before any HTML with onclick handlers -->
     <script>
         // Define all window functions FIRST before HTML is parsed
@@ -1895,7 +1987,14 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
                     
                 case 'addMessage':
                     if (message.message.loading) {
-                        addAssistantMessage(message.message.content, true);
+                        // Show typing indicator instead of "..."
+                        const typingDiv = document.createElement('div');
+                        typingDiv.className = 'message assistant loading';
+                        typingDiv.setAttribute('role', 'status');
+                        typingDiv.setAttribute('aria-label', 'AI is thinking');
+                        typingDiv.innerHTML = '<div class="message-content"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+                        messagesContainer.appendChild(typingDiv);
+                        scrollToBottom();
                     } else {
                         const loadingMsg = messagesContainer.querySelector('.message.loading');
                         if (loadingMsg) {
@@ -1912,6 +2011,23 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         });
 
         scrollToBottom();
+
+        // Scroll-to-bottom button visibility
+        const scrollBtn = document.getElementById('scrollToBottom');
+        if (messagesContainer && scrollBtn) {
+            messagesContainer.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+                const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+                scrollBtn.classList.toggle('visible', !isNearBottom);
+            });
+        }
+
+        // Add ARIA attributes to message container
+        if (messagesContainer) {
+            messagesContainer.setAttribute('role', 'log');
+            messagesContainer.setAttribute('aria-label', 'Chat messages');
+            messagesContainer.setAttribute('aria-live', 'polite');
+        }
     </script>
 </body>
 </html>`;

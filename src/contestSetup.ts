@@ -667,7 +667,127 @@ export class ContestSetup {
         }
     }
 
+    /**
+     * Get the preferred language from settings.
+     */
+    private getPreferredLanguage(): 'cpp' | 'python' | 'java' {
+        const config = vscode.workspace.getConfiguration('codeforces');
+        return config.get<'cpp' | 'python' | 'java'>('language', 'cpp');
+    }
+
+    /**
+     * Get the solution filename for the given language.
+     */
+    private getSolutionFileName(language: 'cpp' | 'python' | 'java'): string {
+        switch (language) {
+            case 'python': return 'main.py';
+            case 'java': return 'Main.java';
+            default: return 'main.cpp';
+        }
+    }
+
+    /**
+     * Create a solution template file in the preferred language.
+     */
+    private async createSolutionTemplate(problemDir: string): Promise<string> {
+        const language = this.getPreferredLanguage();
+        const fileName = this.getSolutionFileName(language);
+        const filePath = path.join(problemDir, fileName);
+
+        if (fs.existsSync(filePath)) {
+            return filePath;
+        }
+
+        let template: string;
+        switch (language) {
+            case 'python':
+                template = `import sys
+from collections import defaultdict, deque, Counter
+from itertools import permutations, combinations
+from math import gcd, ceil, floor, sqrt, log2
+from functools import lru_cache
+
+input = sys.stdin.readline
+
+def solve():
+    # TODO: Implement solution
+    pass
+
+def main():
+    t = int(input())
+    for _ in range(t):
+        solve()
+
+if __name__ == "__main__":
+    main()
+`;
+                break;
+
+            case 'java':
+                template = `import java.util.*;
+import java.io.*;
+
+public class Main {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static PrintWriter out = new PrintWriter(new BufferedOutputStream(System.out));
+
+    public static void main(String[] args) throws IOException {
+        int t = Integer.parseInt(br.readLine().trim());
+        while (t-- > 0) {
+            solve();
+        }
+        out.flush();
+        out.close();
+    }
+
+    static void solve() throws IOException {
+        // TODO: Implement solution
+    }
+}
+`;
+                break;
+
+            default: // cpp
+                template = `#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+#include <set>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <queue>
+#include <stack>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    // TODO: Implement solution
+    
+    return 0;
+}
+`;
+                break;
+        }
+
+        fs.writeFileSync(filePath, template);
+        return filePath;
+    }
+
     private async createMainCpp(filePath: string): Promise<void> {
+        // Legacy method - creates the file based on the provided path
+        const ext = path.extname(filePath);
+        const dir = path.dirname(filePath);
+        
+        if (ext === '.py' || ext === '.java') {
+            // Redirect to new method
+            await this.createSolutionTemplate(dir);
+            return;
+        }
+
         const template = `#include <iostream>
 #include <vector>
 #include <string>
@@ -773,10 +893,16 @@ int main() {
 
         progress.report({ increment: 80, message: 'Creating template files...' });
 
-        // Create main.cpp if it doesn't exist
-        const mainCppPath = path.join(problemDir, 'main.cpp');
-        if (!fs.existsSync(mainCppPath)) {
-            await this.createMainCpp(mainCppPath);
+        // Create solution file in preferred language
+        const solutionPath = await this.createSolutionTemplate(problemDir);
+
+        // Also keep creating main.cpp for backward compatibility if language is not cpp
+        const language = this.getPreferredLanguage();
+        if (language !== 'cpp') {
+            const mainCppPath = path.join(problemDir, 'main.cpp');
+            if (!fs.existsSync(mainCppPath)) {
+                await this.createMainCpp(mainCppPath);
+            }
         }
 
         progress.report({ increment: 100, message: 'Done!' });
@@ -790,17 +916,21 @@ int main() {
             console.log('Could not check solved status:', error);
         }
 
-        // Open the main.cpp file
-        const uri = vscode.Uri.file(mainCppPath);
+        // Open the solution file
+        const uri = vscode.Uri.file(solutionPath);
         await vscode.window.showTextDocument(uri);
 
         const solvedBadge = isSolved ? ' ✓ Solved' : '';
+        const langLabel = language === 'cpp' ? 'C++' : language === 'python' ? 'Python' : 'Java';
         vscode.window.showInformationMessage(
-            `Contest ${contestId} problem ${problemIndex} setup complete!${solvedBadge}`,
-            'Run Tests'
+            `Contest ${contestId} problem ${problemIndex} setup complete! (${langLabel})${solvedBadge}`,
+            'Run Tests',
+            'View Statement'
         ).then(selection => {
             if (selection === 'Run Tests') {
                 vscode.commands.executeCommand('codeforces.runTests');
+            } else if (selection === 'View Statement') {
+                vscode.commands.executeCommand('codeforces.showProblemStatement');
             }
         });
     }

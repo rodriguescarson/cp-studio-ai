@@ -10,3 +10,4 @@ out/
 dist/
 builds/
 *.tsbuildinfo
+.cpstudio-tmp/

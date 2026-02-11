@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { SolvedProblemsTracker } from './solvedTracker';
+import { getDesignSystemCSS } from './designSystem';
 
 export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'cfStudioSolvedProblemsView';
@@ -85,16 +86,11 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
     }
 
     private async updateContent(): Promise<void> {
-        if (!this._view) {
-            return;
-        }
+        if (!this._view) return;
 
         try {
             if (this.isLoading) {
-                this._view.webview.postMessage({
-                    command: 'updateContent',
-                    content: this.getLoadingContent()
-                });
+                this._view.webview.postMessage({ command: 'updateContent', content: this.getLoadingContent() });
                 return;
             }
 
@@ -108,7 +104,7 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
         } catch (error: any) {
             this._view.webview.postMessage({
                 command: 'updateContent',
-                content: `<div class="error">Error loading solved problems: ${error.message}</div>`
+                content: `<div class="error" role="alert">Error loading solved problems: ${error.message}</div>`
             });
         }
     }
@@ -131,33 +127,48 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
             const uri = vscode.Uri.file(mainCppPath);
             await vscode.window.showTextDocument(uri);
         } else {
-            // Open the problem directory in explorer
             const uri = vscode.Uri.file(problemDir);
             await vscode.commands.executeCommand('revealFileInOS', uri);
             vscode.window.showInformationMessage(
-                `Problem directory: ${problemDir}. Use "cfx: Setup Contest from URL" to set it up.`
+                `Problem directory: ${problemDir}. Use "CP Studio: Setup Problem from URL" to set it up.`
             );
         }
     }
 
     private getLoadingContent(): string {
         return `
-            <div class="container">
-                <h2>Loading Solved Problems...</h2>
-                <p>Please wait while we fetch your solved problems from Codeforces.</p>
+            <div class="cfx-stagger" role="status" aria-label="Loading solved problems">
+                <div class="cfx-skeleton cfx-skeleton-text" style="width:160px; height:20px;"></div>
+                <div class="cfx-skeleton cfx-skeleton-card"></div>
+                <div class="cfx-skeleton cfx-skeleton-card"></div>
+                <div class="cfx-skeleton cfx-skeleton-card"></div>
+                <div class="cfx-skeleton cfx-skeleton-card"></div>
+                <span class="sr-only">Loading solved problems...</span>
             </div>
         `;
     }
 
     private getSolvedProblemsContent(problems: string[], cacheInfo: { lastRefresh: number | null; count: number } | null): string {
-        // Sort problems by contest ID
+        if (problems.length === 0) {
+            return `
+                <div class="cfx-empty cfx-fade-in" role="region" aria-label="No solved problems">
+                    <div class="cfx-empty-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <rect x="12" y="16" width="40" height="36" rx="4" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+                            <path d="M24 32l6 6 12-12" stroke="var(--cfx-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="cfx-empty-title">No Solved Problems Yet</div>
+                    <div class="cfx-empty-description">Set up your Codeforces username and start solving problems. Your progress will appear here.</div>
+                    <button class="cfx-btn cfx-btn-primary" onclick="refreshSolved()" aria-label="Refresh solved problems">Refresh</button>
+                </div>
+            `;
+        }
+
         const sortedProblems = problems.sort((a, b) => {
-            // Extract contest ID (numbers before the letter)
             const aMatch = a.match(/^(\d+)/);
             const bMatch = b.match(/^(\d+)/);
-            const aId = aMatch ? parseInt(aMatch[1], 10) : 0;
-            const bId = bMatch ? parseInt(bMatch[1], 10) : 0;
-            return aId - bId;
+            return (bMatch ? parseInt(bMatch[1], 10) : 0) - (aMatch ? parseInt(aMatch[1], 10) : 0);
         });
 
         const lastRefresh = cacheInfo && cacheInfo.lastRefresh !== null
@@ -165,44 +176,42 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
             : 'Never';
 
         return `
-            <div class="container">
-                <div class="header">
-                    <h2>Solved Problems</h2>
-                    <div class="stats">
-                        <span class="count">${problems.length} solved</span>
-                        <span class="last-refresh">Last refresh: ${lastRefresh}</span>
+            <div class="cfx-fade-in" role="region" aria-label="Solved problems list">
+                <div class="header-section" style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div>
+                            <span class="cfx-badge cfx-badge-success" aria-label="${problems.length} solved">${problems.length} solved</span>
+                        </div>
+                        <button class="cfx-btn cfx-btn-secondary cfx-btn-sm" onclick="refreshSolved()" aria-label="Refresh solved problems">Refresh</button>
                     </div>
-                    <button class="refresh-btn" onclick="refreshSolved()">Refresh</button>
+                    <input type="text" class="cfx-input" id="search-input" placeholder="Search problems (e.g. 1234A)..." 
+                           oninput="filterProblems()" aria-label="Search solved problems" style="margin-bottom:4px;" />
+                    <div style="font-size:11px; opacity:0.5;">Last refresh: ${lastRefresh}</div>
                 </div>
-                <div class="problems-list">
-                    ${sortedProblems.length === 0 
-                        ? '<div class="empty">No solved problems found. Make sure your Codeforces username is configured.</div>'
-                        : sortedProblems.map(problemId => {
-                            // Parse contestId and problemIndex from format like "69A"
-                            const match = problemId.match(/^(\d+)([A-Z]+)$/);
-                            if (!match) return '';
-                            
-                            const contestId = match[1];
-                            const problemIndex = match[2];
-                            const problemUrl = `https://codeforces.com/problemset/problem/${contestId}/${problemIndex}`;
-                            
-                            return `
-                                <div class="problem-item">
-                                    <span class="problem-id">${contestId}${problemIndex}</span>
-                                    <div class="problem-actions">
-                                        <button class="action-btn" onclick="openProblem(${contestId}, '${problemIndex}')">Open</button>
-                                        <button class="action-btn" onclick="openCodeforces('${problemUrl}')">View on CF</button>
-                                    </div>
+                <div id="problems-list" class="problems-list cfx-stagger" role="list" aria-label="Solved problems">
+                    ${sortedProblems.map(problemId => {
+                        const match = problemId.match(/^(\d+)([A-Z]+)$/);
+                        if (!match) return '';
+                        const contestId = match[1];
+                        const problemIndex = match[2];
+                        const problemUrl = `https://codeforces.com/problemset/problem/${contestId}/${problemIndex}`;
+                        return `
+                            <div class="problem-item" data-id="${problemId}" role="listitem" aria-label="Problem ${contestId}${problemIndex}">
+                                <span class="problem-id">${contestId}${problemIndex}</span>
+                                <div class="problem-actions">
+                                    <button class="cfx-btn cfx-btn-secondary cfx-btn-sm" onclick="openProblem(${contestId}, '${problemIndex}')" aria-label="Open problem ${contestId}${problemIndex} locally">Open</button>
+                                    <button class="cfx-btn cfx-btn-ghost cfx-btn-sm" onclick="openCodeforces('${problemUrl}')" aria-label="View ${contestId}${problemIndex} on Codeforces">CF</button>
                                 </div>
-                            `;
-                        }).join('')
-                    }
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
     }
 
     private getWebviewContent(): string {
+        const designCSS = getDesignSystemCSS();
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,135 +220,51 @@ export class SolvedProblemsViewProvider implements vscode.WebviewViewProvider {
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
     <title>Solved Problems</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        ${designCSS}
 
-        body {
-            font-family: var(--vscode-font-family);
-            font-size: var(--vscode-font-size);
-            color: var(--vscode-foreground);
-            background-color: var(--vscode-sideBar-background);
-            padding: 15px;
-        }
+        body { padding: 15px; }
 
-        .container {
-            width: 100%;
-        }
-
-        .header {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--vscode-panel-border);
-        }
-
-        h2 {
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .count {
-            font-weight: 600;
-            color: var(--vscode-testing-iconPassed);
-        }
-
-        .refresh-btn {
-            padding: 6px 12px;
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .refresh-btn:hover {
-            background: var(--vscode-button-hoverBackground);
-        }
-
-        .problems-list {
-            max-height: calc(100vh - 150px);
-            overflow-y: auto;
-        }
+        .problems-list { max-height: calc(100vh - 150px); overflow-y: auto; }
 
         .problem-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 6px;
-            background-color: var(--vscode-list-hoverBackground);
-            border-radius: 6px;
-            transition: background-color 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; margin-bottom: 4px;
+            background: var(--vscode-editor-background);
+            border-radius: var(--cfx-radius-md);
+            transition: all var(--cfx-transition-fast);
         }
-
         .problem-item:hover {
-            background-color: var(--vscode-list-activeSelectionBackground);
+            background: var(--vscode-list-hoverBackground);
+            border-left: 2px solid var(--cfx-accent);
+            padding-left: 10px;
         }
-
-        .problem-id {
-            font-family: var(--vscode-editor-font-family);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .problem-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .action-btn {
-            padding: 4px 8px;
-            background: var(--vscode-button-secondaryBackground);
-            color: var(--vscode-button-secondaryForeground);
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .action-btn:hover {
-            background: var(--vscode-button-secondaryHoverBackground);
-        }
-
-        .empty {
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0.7;
-        }
-
-        .error {
-            color: var(--vscode-errorForeground);
-            padding: 15px;
-        }
+        .problem-id { font-family: var(--vscode-editor-font-family); font-weight: 600; font-size: 13px; }
+        .problem-actions { display: flex; gap: 4px; }
+        .error { color: var(--vscode-errorForeground); padding: 15px; }
     </style>
 </head>
 <body>
-    <div id="content">Loading...</div>
+    <div id="content" role="main" aria-live="polite">
+        <div class="cfx-stagger" role="status">
+            <div class="cfx-skeleton cfx-skeleton-card"></div>
+            <div class="cfx-skeleton cfx-skeleton-card"></div>
+        </div>
+    </div>
     <script>
         const vscode = acquireVsCodeApi();
         const contentDiv = document.getElementById('content');
 
-        function refreshSolved() {
-            vscode.postMessage({ command: 'refresh' });
-        }
+        function refreshSolved() { vscode.postMessage({ command: 'refresh' }); }
+        function openProblem(contestId, problemIndex) { vscode.postMessage({ command: 'openProblem', contestId, problemIndex }); }
+        function openCodeforces(url) { vscode.postMessage({ command: 'openCodeforces', url }); }
 
-        function openProblem(contestId, problemIndex) {
-            vscode.postMessage({ command: 'openProblem', contestId, problemIndex });
-        }
-
-        function openCodeforces(url) {
-            vscode.postMessage({ command: 'openCodeforces', url });
+        function filterProblems() {
+            const query = document.getElementById('search-input')?.value?.toLowerCase() || '';
+            const items = document.querySelectorAll('.problem-item');
+            items.forEach(item => {
+                const id = (item.getAttribute('data-id') || '').toLowerCase();
+                item.style.display = id.includes(query) ? '' : 'none';
+            });
         }
 
         window.addEventListener('message', event => {

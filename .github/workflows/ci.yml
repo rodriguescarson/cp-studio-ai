@@ -37,6 +37,9 @@ jobs:
           exit 1
         fi
 
+    - name: Run tests
+      run: npm test
+
     - name: Validate package.json
       run: npm run package -- --dry-run || true
 
