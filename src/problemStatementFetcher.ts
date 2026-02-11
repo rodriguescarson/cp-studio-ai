@@ -24,6 +24,47 @@ export interface ProblemStatement {
 
 export class ProblemStatementFetcher {
     /**
+     * Extract text from a Cheerio element, converting <br> and <div> tags to newlines.
+     * This is needed because Codeforces uses <div> and <br> inside <pre> elements 
+     * for line breaks, but cheerio's .text() strips them.
+     */
+    static extractPreText($: cheerio.CheerioAPI, elem: cheerio.Cheerio<any>): string {
+        let html = elem.html() || '';
+        // Replace <br> variants with newlines
+        html = html.replace(/<br\s*\/?>/gi, '\n');
+        // Replace closing div tags with newline (for <div class="test-example-line"> format)
+        html = html.replace(/<\/div>/gi, '\n');
+        // Remove all remaining HTML tags
+        html = html.replace(/<[^>]+>/g, '');
+        // Decode common HTML entities
+        html = html.replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&nbsp;/g, ' ')
+                    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code)));
+        // Clean up: collapse 3+ newlines to 2, trim trailing spaces per line
+        html = html.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+$/gm, '');
+        return html.trim();
+    }
+
+    /**
+     * Extract text from a header property element like .time-limit, .memory-limit.
+     * Codeforces wraps these as:
+     *   <div class="time-limit"><div class="property-title">time limit per test</div>2 seconds</div>
+     * So .text() returns "time limit per test2 seconds" without a separator.
+     */
+    private static extractPropertyValue($: cheerio.CheerioAPI, parentSelector: cheerio.Cheerio<any>, className: string): string {
+        const el = parentSelector.find(`.${className}`).first();
+        if (el.length === 0) return '';
+        const titleEl = el.find('.property-title');
+        const titleText = titleEl.text().trim();
+        titleEl.remove();
+        const value = el.text().trim();
+        return value || '';
+    }
+
+    /**
      * Fetch problem statement from Codeforces using web scraping
      */
     static async fetchFromWeb(contestId: number, problemIndex: string): Promise<ProblemStatement | null> {
@@ -44,10 +85,10 @@ export class ProblemStatementFetcher {
                 return null;
             }
             
-            // Extract header information
-            const title = problemStatement.find('.title').first().text().trim();
-            const timeLimit = problemStatement.find('.time-limit').text().trim();
-            const memoryLimit = problemStatement.find('.memory-limit').text().trim();
+            // Extract header information - properly separate property titles from values
+            const title = problemStatement.find('.header .title').first().text().trim();
+            const timeLimit = this.extractPropertyValue($, problemStatement.find('.header'), 'time-limit');
+            const memoryLimit = this.extractPropertyValue($, problemStatement.find('.header'), 'memory-limit');
             
             // Extract problem description sections
             let description = '';
@@ -57,6 +98,31 @@ export class ProblemStatementFetcher {
                 
                 // Skip header
                 if (classList.includes('header')) {
+                    return;
+                }
+                
+                // Handle sample-tests section specially to preserve formatting
+                if (classList.includes('sample-tests')) {
+                    let exampleText = '';
+                    const sampleTitle = $elem.find('> .section-title').first().text().trim();
+                    
+                    $elem.find('.sample-test').each((_, sampleElem) => {
+                        const $sample = $(sampleElem);
+                        
+                        $sample.find('.input, .output').each((_, ioElem) => {
+                            const $io = $(ioElem);
+                            const ioTitle = $io.find('.section-title').text().trim();
+                            const preElem = $io.find('pre');
+                            const preText = ProblemStatementFetcher.extractPreText($, preElem);
+                            if (preText) {
+                                exampleText += `**${ioTitle}:**\n\`\`\`\n${preText}\n\`\`\`\n\n`;
+                            }
+                        });
+                    });
+                    
+                    if (exampleText) {
+                        description += `## ${sampleTitle || 'Examples'}\n\n${exampleText}`;
+                    }
                     return;
                 }
                 
@@ -72,6 +138,9 @@ export class ProblemStatementFetcher {
                     if (!lowerText.includes('hello, codeforces') &&
                         !lowerText.includes('invite you') &&
                         !lowerText.includes('we are excited')) {
+                        // Convert Codeforces LaTeX $$$...$$ to standard $...$
+                        text = text.replace(/\$\$\$(.*?)\$\$\$/g, '$$$1$$');
+                        
                         if (sectionTitle.length > 0) {
                             description += `## ${sectionTitle.text().trim()}\n\n${text}\n\n`;
                         } else {
@@ -91,14 +160,14 @@ export class ProblemStatementFetcher {
             const lowerDesc = description.toLowerCase();
             if (lowerDesc.includes('hello, codeforces') ||
                 lowerDesc.includes('invite you to participate') ||
-                description.length < 100) {
+                description.length < 50) {
                 return null;
             }
             
             return {
                 title: title || `Problem ${problemIndex}`,
-                timeLimit: timeLimit || 'time limit per test2 seconds',
-                memoryLimit: memoryLimit || 'memory limit per test256 megabytes',
+                timeLimit: timeLimit || '2 seconds',
+                memoryLimit: memoryLimit || '256 megabytes',
                 description,
                 url,
                 platform: 'codeforces'
@@ -164,13 +233,18 @@ export class ProblemStatementFetcher {
      * Format problem statement as markdown
      */
     static formatAsMarkdown(statement: ProblemStatement): string {
-        return `# ${statement.title}\n\n` +
-               `**Time Limit:** ${statement.timeLimit}\n\n` +
-               `**Memory Limit:** ${statement.memoryLimit}\n\n` +
-               `**Input File:** inputstandard input\n\n` +
-               `**Output File:** outputstandard output\n\n` +
-               `${statement.description}\n\n` +
-               `**Problem URL:** ${statement.url}`;
+        let md = `# ${statement.title}\n\n`;
+        if (statement.timeLimit) {
+            md += `**Time Limit:** ${statement.timeLimit}\n\n`;
+        }
+        if (statement.memoryLimit) {
+            md += `**Memory Limit:** ${statement.memoryLimit}\n\n`;
+        }
+        md += `---\n\n`;
+        md += `${statement.description}\n\n`;
+        md += `---\n\n`;
+        md += `**Problem URL:** ${statement.url}`;
+        return md;
     }
 
     /**

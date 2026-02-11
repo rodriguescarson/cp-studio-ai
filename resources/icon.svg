@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- Hexagon outline -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M14 2L4 7.8v12.4L14 26l10-5.8V7.8L14 2zm0 2.1l8 4.64v9.52L14 22.9l-8-4.64V8.74L14 4.1z" fill="#C5C5C5"/>
+  <!-- Lightning bolt -->
+  <path d="M15.2 6.5L9 14.5h4.5L11.5 21.5 19 13h-4.8l1-6.5z" fill="#C5C5C5"/>
+</svg>
