@@ -337,7 +337,8 @@
         "codeforces.aiApiKey": {
           "type": "string",
           "default": "",
-          "description": "OpenRouter API key (or other provider key) - Get yours at https://openrouter.ai"
+          "description": "Deprecated: do not store your key here. Run the \"cfx: Configure API Key\" command — it is saved securely in your OS keychain (SecretStorage). Any value left here is migrated and cleared automatically.",
+          "markdownDeprecationMessage": "**Deprecated.** Storing the API key in settings keeps it in plaintext and syncs it via Settings Sync. Run **cfx: Configure API Key** instead — it is stored securely in your OS keychain. Any existing value here is migrated and cleared automatically."
         },
         "codeforces.username": {
           "type": "string",

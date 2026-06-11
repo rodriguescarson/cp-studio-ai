@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { ChatMessage, isValidFilePath } from './chatManager';
+import { getAiApiKey } from './apiKey';
 
 export class AIAnalyzer {
     private context: vscode.ExtensionContext;
@@ -16,14 +17,14 @@ export class AIAnalyzer {
 
     async sendChatMessage(userMessage: string, filePath?: string, chatHistory: ChatMessage[] = []): Promise<string> {
         const config = vscode.workspace.getConfiguration('codeforces');
-        const apiKey = config.get<string>('aiApiKey', '');
+        const apiKey = await getAiApiKey(this.context);
         const provider = config.get<string>('aiProvider', 'openrouter');
         // Default to gpt-4o:online for web search capability, or use openrouter's latest models
         const model = config.get<string>('aiModel', provider === 'openrouter' ? 'openai/gpt-4o:online' : 'gpt-4o');
         const baseUrl = config.get<string>('aiBaseUrl', '');
 
         if (!apiKey || apiKey.trim() === '') {
-            const errorMsg = 'API key not configured. Please set codeforces.aiApiKey in settings or use the Configure API Key button.';
+            const errorMsg = 'API key not configured. Run the "cfx: Configure API Key" command (it is stored securely in your OS keychain).';
             throw new Error(errorMsg);
         }
 
@@ -294,7 +295,7 @@ Always provide:
 
     async analyzeCode(filePath: string): Promise<void> {
         const config = vscode.workspace.getConfiguration('codeforces');
-        const apiKey = config.get<string>('aiApiKey', '');
+        const apiKey = await getAiApiKey(this.context);
         const provider = config.get<string>('aiProvider', 'openrouter');
         // Default to gpt-4o:online for web search capability
         const model = config.get<string>('aiModel', provider === 'openrouter' ? 'openai/gpt-4o:online' : 'gpt-4o');
@@ -303,13 +304,13 @@ Always provide:
         // Check if API key is set
         if (!apiKey) {
             const action = await vscode.window.showWarningMessage(
-                'OpenRouter API key not configured. Please set codeforces.aiApiKey in settings. Get your key at https://openrouter.ai',
-                'Open Settings',
+                'OpenRouter API key not configured. Configure it now (stored securely in your OS keychain). Get your key at https://openrouter.ai',
+                'Configure API Key',
                 'Open OpenRouter'
             );
 
-            if (action === 'Open Settings') {
-                vscode.commands.executeCommand('workbench.action.openSettings', 'codeforces.aiApiKey');
+            if (action === 'Configure API Key') {
+                vscode.commands.executeCommand('codeforces.configureApiKey');
             } else if (action === 'Open OpenRouter') {
                 vscode.env.openExternal(vscode.Uri.parse('https://openrouter.ai'));
             }

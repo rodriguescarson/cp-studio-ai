@@ -3,7 +3,18 @@ import { ChatManager, ChatSession, isValidFilePath } from './chatManager';
 import { AIAnalyzer } from './aiAnalyzer';
 import { CodeCopier } from './codeCopier';
 import { registerViewForCollapse } from './viewManager';
+import { getAiApiKey, setAiApiKey } from './apiKey';
 import * as path from 'path';
+
+/** HTML-escape a value before it is interpolated into webview markup. */
+function escapeHtml(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'cfStudioChatView';
@@ -400,9 +411,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     }
 
     private async handleConfigureApiKey(): Promise<void> {
-        const config = vscode.workspace.getConfiguration('codeforces');
-        const currentKey = config.get<string>('aiApiKey', '');
-        
+        const currentKey = await getAiApiKey(this._context);
+
         const apiKey = await vscode.window.showInputBox({
             prompt: 'Enter your OpenRouter API key',
             placeHolder: 'sk-or-v1-...',
@@ -418,8 +428,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         });
 
         if (apiKey !== undefined) {
-            await config.update('aiApiKey', apiKey.trim(), vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage('API key configured successfully!');
+            await setAiApiKey(this._context, apiKey);
+            vscode.window.showInformationMessage('API key stored securely in your OS keychain.');
         }
     }
 
@@ -494,7 +504,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
         const hasContestFile = context.filePath && context.filePath.includes('contests') && context.filePath.endsWith('main.cpp');
         const welcomeMessage = hasContestFile && this._session?.contestId && this._session?.problemIndex
-            ? `Chat for <strong>Contest ${this._session.contestId} - Problem ${this._session.problemIndex}</strong>. Your code and the problem statement are included with each message. Use the Test and Analyze buttons in the panel header.`
+            ? `Chat for <strong>Contest ${escapeHtml(this._session.contestId)} - Problem ${escapeHtml(this._session.problemIndex)}</strong>. Your code and the problem statement are included with each message. Use the Test and Analyze buttons in the panel header.`
             : hasContestFile
                 ? 'Your code and problem context are sent with each message.'
                 : 'Open a contest problem (<code>main.cpp</code> in a contest folder) to chat with full problem context—statement, samples, and code.';
@@ -1555,6 +1565,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
     <script>
         // Functions are already defined in the first script block above
         // This script block handles the rest of the functionality
@@ -1702,6 +1713,15 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
                         headerIds: false,
                         mangle: false
                     });
+                    // marked does not sanitize HTML. The rendered text is model
+                    // output (and can be steered by prompt injection or a loaded
+                    // chat-session file), so sanitize before it reaches innerHTML.
+                    if (typeof DOMPurify !== 'undefined') {
+                        htmlContent = DOMPurify.sanitize(htmlContent);
+                    } else {
+                        // No sanitizer available — fall back to escaped plain text.
+                        htmlContent = escapeHtml(contentForMarkdown).replace(/\\n/g, '<br>');
+                    }
                 } catch (e) {
                     console.error('Markdown parsing error:', e);
                     htmlContent = escapeHtml(contentForMarkdown).replace(/\\n/g, '<br>');
