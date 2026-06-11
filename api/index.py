@@ -5,8 +5,13 @@ Serves dashboard HTML and handles API routes
 import os
 import json
 import sys
+import logging
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+
+# CORS origin is configurable; set CORS_ALLOW_ORIGIN to the dashboard origin in
+# production to stop the endpoints being a wide-open cross-origin proxy.
+ALLOW_ORIGIN = os.getenv("CORS_ALLOW_ORIGIN", "*")
 
 # Add scripts directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
@@ -537,7 +542,7 @@ class handler(BaseHTTPRequestHandler):
                 html = get_dashboard_html()
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
                 self.end_headers()
                 self.wfile.write(html.encode('utf-8'))
                 return
@@ -552,8 +557,9 @@ class handler(BaseHTTPRequestHandler):
             else:
                 self.send_error(404, "Not Found")
                 
-        except Exception as e:
-            self.send_error(500, f"Internal Server Error: {str(e)}")
+        except Exception:
+            logging.exception("Unhandled error in do_GET")
+            self.send_error(500, "Internal Server Error")
     
     def handle_contests(self, parsed):
         """Handle /api/contests endpoint"""
@@ -620,15 +626,17 @@ class handler(BaseHTTPRequestHandler):
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
+            self.send_header('Cache-Control', 'public, max-age=60')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode('utf-8'))
             
-        except Exception as e:
-            error_response = {'status': 'error', 'message': str(e)}
+        except Exception:
+            logging.exception("API handler failed")
+            error_response = {'status': 'error', 'message': 'Internal server error'}
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
             self.end_headers()
             self.wfile.write(json.dumps(error_response).encode('utf-8'))
     
@@ -642,7 +650,7 @@ class handler(BaseHTTPRequestHandler):
                 error_response = {'status': 'error', 'message': 'handle parameter required'}
                 self.send_response(400)
                 self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
                 self.end_headers()
                 self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 return
@@ -653,7 +661,7 @@ class handler(BaseHTTPRequestHandler):
                 error_response = {'status': 'error', 'message': 'User not found'}
                 self.send_response(404)
                 self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
                 self.end_headers()
                 self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 return
@@ -691,15 +699,17 @@ class handler(BaseHTTPRequestHandler):
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
+            self.send_header('Cache-Control', 'public, max-age=60')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode('utf-8'))
             
-        except Exception as e:
-            error_response = {'status': 'error', 'message': str(e)}
+        except Exception:
+            logging.exception("API handler failed")
+            error_response = {'status': 'error', 'message': 'Internal server error'}
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
             self.end_headers()
             self.wfile.write(json.dumps(error_response).encode('utf-8'))
     
@@ -713,7 +723,7 @@ class handler(BaseHTTPRequestHandler):
                 error_response = {'status': 'error', 'message': 'handle parameter required'}
                 self.send_response(400)
                 self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
                 self.end_headers()
                 self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 return
@@ -723,7 +733,7 @@ class handler(BaseHTTPRequestHandler):
                 error_response = {'status': 'error', 'message': 'User not found'}
                 self.send_response(404)
                 self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
                 self.end_headers()
                 self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 return
@@ -742,14 +752,16 @@ class handler(BaseHTTPRequestHandler):
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
+            self.send_header('Cache-Control', 'public, max-age=60')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode('utf-8'))
             
-        except Exception as e:
-            error_response = {'status': 'error', 'message': str(e)}
+        except Exception:
+            logging.exception("API handler failed")
+            error_response = {'status': 'error', 'message': 'Internal server error'}
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Origin', ALLOW_ORIGIN)
             self.end_headers()
             self.wfile.write(json.dumps(error_response).encode('utf-8'))

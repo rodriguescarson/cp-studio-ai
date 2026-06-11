@@ -57,6 +57,12 @@ def submit_solution(contest_id, problem_id, file_path, lang_id="73"):
         # Load saved cookies
         cookie_path = os.path.expanduser("~/codeforces.cookies")
         if os.path.isfile(cookie_path):
+            # This file holds a live Codeforces session. Make sure it is not
+            # readable by other local users, and warn if it ever was.
+            mode = os.stat(cookie_path).st_mode
+            if mode & 0o077:
+                print("Warning: ~/codeforces.cookies was group/world-readable; tightening to 0600.")
+            os.chmod(cookie_path, 0o600)
             driver.get("https://codeforces.com")
             time.sleep(2)
             with open(cookie_path, "r") as f:
