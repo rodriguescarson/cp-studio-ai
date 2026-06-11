@@ -18,6 +18,7 @@ import { ProblemFileDecorationProvider } from './fileDecorationProvider';
 import { registerViewForCollapse } from './viewManager';
 import { StatusBarManager } from './statusBar';
 import { StreakTracker } from './streakTracker';
+import { getAiApiKey, setAiApiKey } from './apiKey';
 import { AchievementManager } from './achievements';
 import { ProblemViewerPanel } from './problemViewer';
 import { QuickActionsViewProvider } from './quickActionsView';
@@ -344,9 +345,8 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     const configureApiKeyCommand = vscode.commands.registerCommand('codeforces.configureApiKey', async () => {
-        const config = vscode.workspace.getConfiguration('codeforces');
-        const currentKey = config.get<string>('aiApiKey', '');
-        
+        const currentKey = await getAiApiKey(context);
+
         const apiKey = await vscode.window.showInputBox({
             prompt: 'Enter your OpenRouter API key',
             placeHolder: 'sk-or-v1-...',
@@ -362,8 +362,8 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         if (apiKey !== undefined) {
-            await config.update('aiApiKey', apiKey.trim(), vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage('API key configured successfully!');
+            await setAiApiKey(context, apiKey);
+            vscode.window.showInformationMessage('API key stored securely in your OS keychain.');
         }
     });
 
